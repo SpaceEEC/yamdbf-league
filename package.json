@@ -1,0 +1,49 @@
+{
+  "name": "yamdbf-league",
+  "version": "1.0.0",
+  "description": "YAMDBF plugin that allows users to see their and others League of Legends profiles.",
+  "main": "bin/index",
+  "typings": "bin/index.d.ts",
+  "scripts": {
+    "postinstall": "postinstall-build --only-as-dependency bin \"npm run build\"",
+    "build": "gulp",
+    "package": "gulp clean-package && gulp package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spaceeec/yamdbf-league.git"
+  },
+  "keywords": [
+    "discord",
+    "yamdbf",
+    "plugin",
+    "bot",
+    "node"
+  ],
+  "author": "SpaceEEC",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.18.1",
+    "postinstall-build": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/snekfetch": "^3.1.0",
+    "@types/node": "^8.0.13",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-typescript": "^3.2.0",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.1",
+    "yamdbf": "github:zajrik/yamdbf",
+    "discord.js": "github:hydrabolt/discord.js#11.1-dev"
+  },
+  "buildDependencies": [
+    "typescript",
+    "del",
+    "gulp",
+    "gulp-typescript",
+    "gulp-sourcemaps",
+    "@types/node"
+  ]
+}
