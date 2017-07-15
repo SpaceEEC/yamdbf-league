@@ -35,55 +35,89 @@ export class LeagueCommand extends Command
 		this.plugin = plugin;
 	}
 
+	// tslint:disable:only-arrow-functions no-shadowed-variable
 	@using(expect({ '<Summoner> ': 'String' }))
-	// tslint:disable-next-line:only-arrow-functions no-shadowed-variable
-	@using(function(message: Message, [inputRegion, query, pageOrChamp]: [string, string, string])
-		: [Message, [string, string, number | Champion]]
+	@using(function(message: Message, args: string[]): [Message, [string, string, Champion | number]]
 	{
-		if (!query)
+		if (args.length === 1)
 		{
-			query = inputRegion;
-			inputRegion = this.plugin.api.options.defaultRegion;
-		}
-		else if (!pageOrChamp)
-		{
-			pageOrChamp = query;
-			query = inputRegion;
-			inputRegion = this.plugin.api.options.defaultRegion;
+			return [message, [this.plugin.api.options.defaultRegion, args[0], 1]];
 		}
 
-		// tslint:disable-next-line:no-shadowed-variable wonderful string enums <.<
-		let region: string = Region[inputRegion.toUpperCase() as any];
-		if (!region)
+		if (args.length === 2)
 		{
-			if (Object.values(Region).includes(inputRegion))
+			let region: string = Region[args[0].toUpperCase() as any];
+			// [Region, Summoner]
+			if (region) return [message, [region, args[1], 1]];
+
+			if (Object.values(Region).includes(args[0].toLowerCase()))
 			{
-				region = inputRegion;
+				// [Region, Summoner]
+				return [message, [args[0].toLowerCase(), args[1], 1]];
+			}
+			else if (!isNaN(parseInt(args[1])))
+			{
+				// [Summoner, Page]
+				return (resolve({
+					'<Region>': 'String',
+					'<Summoner>': 'String',
+					// tslint:disable-next-line:object-literal-sort-keys
+					'<Page>': 'Number',
+				})).call(this, message, [this.plugin.api.options.defaultRegion, args[0], args[1]]);
+			}
+			else if (this.plugin.api.champs.find((_champion: Champion) =>
+				_champion.name.toLowerCase() === args[1].toLowerCase()))
+			{
+				const champ: Champion = this.plugin.api.champs.find((_champion: Champion) =>
+					_champion.name.toLowerCase() === args[1].toLowerCase());
+				// [Summoner, Champion]
+				return [message, [this.plugin.api.options.defaultRegion, args[0], champ]];
 			}
 			else
 			{
-				throw new Error(`Error: in arg \`<Region>\`: \`${inputRegion}\` could not be resolved to a valid Region.\n`
+				throw new Error(`\`${args[0]}\` is not a valid region as well as \`${args[1]}\` is not a valid champion or page.\n`
+					+ 'You have to specify either `[Region] <Summoner>` or `<Summoner> [Page | Champion]`');
+			}
+		}
+
+		let region: string = Region[args[0].toUpperCase() as any];
+		if (!region)
+		{
+			if (Object.values(Region).includes(args[0].toLowerCase()))
+			{
+				region = args[0].toLowerCase();
+			}
+			else
+			{
+				throw new Error(`Error: in arg \`<Region>\`: \`${args[0]}\` could not be resolved to a valid Region.\n`
 					+ `Valid regions are ${Object.keys(Region).map((key: string) => `\`${key}\``).join(', ')}.`);
 			}
 		}
 
-		if (pageOrChamp)
+		if (!isNaN(parseInt(args[2])))
 		{
-			if (!isNaN(parseInt(pageOrChamp)))
-			{
-				return resolve({ '<Region>': 'String', '<Summoner>': 'String', '<Page>': 'Number' })
-					.call(this, message, [region, query, pageOrChamp]);
-			}
-			const champion: Champion =
-				this.plugin.api.champs.find((_champion: Champion) => _champion.name.toLowerCase() === pageOrChamp.toLowerCase());
-			if (champion) return [message, [region, query, champion]];
-
-			throw new Error('Error: in arg `<Page|Champion>`: '
-				+ `\`${pageOrChamp}\` could not be resolved to a champion or page number.`);
+			return (resolve({
+				'<Region>': 'String',
+				'<Summoner>': 'String',
+				// tslint:disable-next-line:object-literal-sort-keys
+				'<Page>': 'Number',
+			})).call(this, message, [this.plugin.api.options.defaultRegion, args[1], args[2]]);
 		}
-
-		return [message, [region, query, 1]];
+		else if (this.plugin.api.champs.find((_champion: Champion) =>
+			_champion.name.toLowerCase() === args[1].toLowerCase()))
+		{
+			const champ: Champion = this.plugin.api.champs.find((_champion: Champion) =>
+				_champion.name.toLowerCase() === args[1].toLowerCase());
+			return [message, [this.plugin.api.options.defaultRegion, args[1], champ]];
+		}
+		else
+		{
+			throw new Error(
+				`Error: in arg \`<Page|Champion>\`: \`${args[2]}\` could not be resolved to a champion or page number.`,
+			);
+		}
 	})
+	// tslint:enable:only-arrow-functions no-shadowed-variable
 	public async action(message: Message, [region, query, input]: [Region, string, number | Champion]): Promise<void>
 	{
 		const summoner: Summoner = await this.plugin.api.getSummoner(region, query);
