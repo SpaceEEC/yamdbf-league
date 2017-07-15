@@ -134,6 +134,12 @@ export class LeagueCommand extends Command
 	private async champion(message: Message, champion: Champion, summoner: Summoner): Promise<void>
 	{
 		const mastery: ChampionMastery = await summoner.getChampionMastery(champion.id);
+		if (!mastery)
+		{
+			return message.channel.send(
+				'Could not find any information about that champ from this user, maybe they never played it?',
+			).then(() => undefined);
+		}
 
 		const strings: string[] = [
 			mastery.title,

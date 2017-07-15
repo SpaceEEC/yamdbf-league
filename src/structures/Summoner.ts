@@ -105,7 +105,7 @@ export class Summoner
 	/**
 	 * Gets or fetches the requested champion's mastery info.
 	 * @param {number} id champion id
-	 * @returns {Promise<ChampionMastery>}
+	 * @returns {Promise<?ChampionMastery>}
 	 */
 	public async getChampionMastery(id: number): Promise<ChampionMastery>
 	{
@@ -116,7 +116,13 @@ export class Summoner
 			return Promise.resolve(mastery);
 		}
 
-		const data: MasteryData = await this._api.request<MasteryData>(oneMastery(this.region, this.id, id));
+		const data: MasteryData = await this._api.request<MasteryData>(oneMastery(this.region, this.id, id))
+			.catch((error: any) =>
+			{
+				if (error.status === 404) return null;
+				throw error;
+			});
+		if (!data) return null;
 		mastery = new ChampionMastery(this._api, this, data);
 
 		this.masteries.push(mastery);
