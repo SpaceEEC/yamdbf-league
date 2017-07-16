@@ -65,7 +65,7 @@ const options: LeaguePluginOptions = {
 	defaultRegion: Region.NA,
 }
 ```
-You can find the enum and it's string representations [here](src/types/Regions.ts).
+You can find the enum and it's string representations [here](src/types/Region.ts).
 
 You should be able to use all valid hosts, that can be found [here](https://developer.riotgames.com/regional-endpoints.html). (Might require a login)
 
