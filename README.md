@@ -6,7 +6,7 @@ YAMDBF league plugin that allows users to see their and other champion masteries
 ```
 npm i -S SpaceEEC/yamdbf-league
 ```
->Note: YAMDBF 3.0.0 is required to use this plugin, since plugin support was/will be added with that version.
+> Note: YAMDBF 3.0.0 is required to use this plugin, since plugin support was/will be added with that version.
 
 - Add it to your client's plugins, here an example:
 ```ts
@@ -28,8 +28,10 @@ For example: `<prefix>league euw test 2`
 Will display the second page (champions 11-20) of the summoner ``test`` in the ``euw`` region.
 
 # Configuring
+> Note: You can use the exported type ``LeaguePluginOptions``.
+
 You can pass the plugin as second parameter an options object, here a full example of this:
->Every key is optional, see the explanation further down for more info.
+
 ```ts
 import { Client, PluginConstructor } from 'yamdbf';
 import { League, LeaguePluginOptions, Region } from 'yamdbf-league';
@@ -51,11 +53,12 @@ const client: Client = new Client({
 	plugins: [league],
 });
 ```
->This type is also exported as ``LeaguePluginOptions``.
-## defaultRegion
-> You can use the exported enum type `Region`.
+> Note: Every key is optional, see the explanation further down for more info.
 
-This option defaults to ``euw1`` (or enum ``Region.EUW``).
+## defaultRegion
+> Note: You can use the exported enum type `Region`.
+
+This option defaults to ``'euw1'`` (or enum ``Region.EUW``).
 
 For example with the exported enum for the north american region:
 ```ts
@@ -75,7 +78,7 @@ This options defaults to ``100``.
 The maximum amount of summoners to cache across all regions to not unnecessarily query the api multiple times for just one summoner.
 
 ## emojis
-An key value object with the keys
+A key value object structured the following way:
 ```ts
 {
 	level4: 'replaceString',
@@ -84,7 +87,7 @@ An key value object with the keys
 	level7: 'replaceString',
 }
 ```
->Every key is optional.
+>Note: Every key is optional.
 
 The passed strings will be used to replace the ``Level n`` (where n is 4-7) representation of champion masteries.
 
