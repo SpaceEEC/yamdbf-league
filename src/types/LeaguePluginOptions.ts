@@ -5,7 +5,7 @@ import { Region } from './';
  */
 export type LeaguePluginOptions = {
 	/**
-	 * Optional strings to use replace `Level n`, can be used for custom emojis
+	 * Optional strings to replace `Level n`, thought to be used for custom emojis
 	 */
 	emojis?: {
 		/**
