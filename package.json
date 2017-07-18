@@ -13,6 +13,10 @@
     "type": "git",
     "url": "git+https://github.com/spaceeec/yamdbf-league.git"
   },
+  "bugs": {
+    "url": "https://github.com/SpaceEEC/yamdbf-league/issues"
+  },
+  "homepage": "https://github.com/SpaceEEC/yamdbf-league#readme",
   "keywords": [
     "discord",
     "yamdbf",
@@ -27,16 +31,16 @@
     "postinstall-build": "^5.0.1"
   },
   "devDependencies": {
+    "@types/node": "^8.0.14",
     "@types/snekfetch": "^3.1.0",
-    "@types/node": "^8.0.13",
     "del": "^3.0.0",
+    "discord.js": "github:hydrabolt/discord.js#11.1-dev",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.0",
-    "gulp-typescript": "^3.2.0",
+    "gulp-typescript": "^3.2.1",
     "tslint": "^5.5.0",
     "typescript": "^2.4.1",
-    "yamdbf": "github:zajrik/yamdbf",
-    "discord.js": "github:hydrabolt/discord.js#11.1-dev"
+    "yamdbf": "github:zajrik/yamdbf"
   },
   "buildDependencies": [
     "typescript",

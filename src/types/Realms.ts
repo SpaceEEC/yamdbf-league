@@ -1,3 +1,6 @@
+/**
+ * All sort of meta data, mostly current version numbers.
+ */
 export type Realms = {
 	/**
 	 * Legacy script mode

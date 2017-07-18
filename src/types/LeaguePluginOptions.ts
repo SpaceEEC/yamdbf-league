@@ -5,12 +5,24 @@ import { Region } from './';
  */
 export type LeaguePluginOptions = {
 	/**
-	 * Optional emoji strings to use custom emoji badges instead of raw strings
+	 * Optional strings to use replace `Level n`, can be used for custom emojis
 	 */
 	emojis?: {
+		/**
+		 * The text that will replace `Level 4`
+		 */
 		level4?: string,
+		/**
+		 * The text that will replace `Level 5`
+		 */
 		level5?: string,
+		/**
+		 * The text that will replace `Level 6`
+		 */
 		level6?: string,
+		/**
+		 * The text that will replace `Level 7`
+		 */
 		level7?: string,
 	},
 	/**
