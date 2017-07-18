@@ -34,12 +34,12 @@ export class LeaguePlugin extends Plugin implements IPlugin
 	}
 
 	/**
-	 * This' name plugin
+	 * Name of this plugin
 	 * @readonly
 	 */
 	public readonly name: string = 'League';
 	/**
-	 * Reference to RiotAPI class instance
+	 * Reference to the RiotAPI class instance
 	 * @readonly
 	 */
 	public readonly api: RiotAPI;

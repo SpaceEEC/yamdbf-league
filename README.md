@@ -17,6 +17,7 @@ const client: Client = new Client({
 	plugins: [League('riot-api-token')],
 });
 ```
+> Note: This plugin's create method is exported as `League`, and `default`.
 
 # Command
 Currently just one command, maybe I'll add more later.
