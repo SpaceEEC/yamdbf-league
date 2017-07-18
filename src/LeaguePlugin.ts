@@ -65,7 +65,7 @@ export class LeaguePlugin extends Plugin implements IPlugin
 	}
 
 	/**
-	 * Initiates this plugin
+	 * Initializes this plugin
 	 * @returns {Promise<void>}
 	 */
 	public async init(): Promise<void>
@@ -78,7 +78,7 @@ export class LeaguePlugin extends Plugin implements IPlugin
 		}
 		catch (error)
 		{
-			Logger.instance().error('LeaguePlugin', 'Initiating failed:', inspect(error, true, Infinity, true));
+			Logger.instance().error('LeaguePlugin', 'Initializing failed:', inspect(error));
 		}
 	}
 }
