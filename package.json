@@ -1,6 +1,6 @@
 {
   "name": "yamdbf-league",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "YAMDBF plugin that allows users to see their and other League of Legends champion masteries.",
   "main": "bin/index",
   "typings": "bin/index.d.ts",
