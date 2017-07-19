@@ -1,0 +1,6 @@
+[PLUGIN_LEAGUE_RESOLVE_TWO_ARGS]
+`{{ region }}` is not a valid region as well as `{{ championOrPage }}` is not a valid champion or page.
+When using two arguments use either `[Region] <Summoner>` or `<Summoner> [Page | Champion]`
+
+[PLUGIN_LEAGUE_RESOLVE_PAGE_OR_CHAMPION]
+In arg `<Page | Champion>`: `{{ arg }}` could not be resolved to a champion or page number.

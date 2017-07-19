@@ -105,7 +105,7 @@ export class RiotAPI
 		if (this._cache.size > this.options.maxCacheSize)
 		{
 			this._cache.delete(this._cache.firstKey());
-			this.logger.debug('LeaguePlugin', 'Removing oldest entry from cache.');
+			this.logger.debug('LeaguePlugin', 'Removed oldest entry from cache.');
 		}
 
 		return summoner;

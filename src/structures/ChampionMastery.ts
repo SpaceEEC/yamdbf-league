@@ -1,5 +1,3 @@
-import * as moment from 'moment';
-
 import { Constants } from '../Constants';
 import { RiotAPI } from '../RiotAPI';
 import { MasteryData } from '../types';
@@ -93,38 +91,6 @@ export class ChampionMastery
 	}
 
 	/**
-	 * Converts this Mastery class to a human readable string.
-	 * @returns {string}
-	 */
-	public toString(): string
-	{
-		let toString: string = this.levelRepresentation;
-		toString += this.name;
-		toString += ` with \`${this.points.toLocaleString()}\` Points.`;
-		return toString;
-	}
-
-	/**
-	 * Returns a field, value "tuple" for an embed
-	 * @readonly
-	 */
-	public get field(): [string, string]
-	{
-		const chest: string = `Chest granted: ${this.chestGranted ? '✅' : '❌'}`;
-
-		let level: string = `Level ${this.level} with \`${this.points.toLocaleString()}\` Points`;
-
-		if (this.level <= 5 && this.level >= 7)
-		{
-			level += `\n additionally \`${this.tokensEarned}\`/\`${this.level === 5 ? '2' : '3'}\` tokens)`;
-		}
-
-		const last: string = `Last played ${moment(this.lastPlayedTimestamp).utc().fromNow()}`;
-
-		return [this.name, [chest, level, last].join('\n')];
-	}
-
-	/**
 	 * Name of the champion
 	 * @readonly
 	 */
@@ -160,12 +126,12 @@ export class ChampionMastery
 	}
 
 	/**
-	 * This' champions level either as "Level `{level}` " or it's emoji if available
+	 * Champion level either as emoji or null
 	 * @readonly
 	 */
-	public get levelRepresentation(): string
+	public get levelEmoji(): string
 	{
-		if (!this._api.options.emojis) return `\` Level ${this.level}\` `;
+		if (!this._api.options.emojis) return null;
 
 		let level: string;
 		switch (this.level)
@@ -184,6 +150,6 @@ export class ChampionMastery
 				break;
 		}
 
-		return level || `\`Level ${this.level}\` `;
+		return level || null;
 	}
 }

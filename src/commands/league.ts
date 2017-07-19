@@ -1,11 +1,12 @@
 import { RichEmbed } from 'discord.js';
-import { Command, Message, Util } from 'yamdbf/bin';
+import { Command, Lang, Message, ResourceLoader, Util } from 'yamdbf/bin';
 import {
 	aliases,
 	clientPermissions,
 	desc,
 	group,
 	guildOnly,
+	localizable,
 	name,
 	usage,
 	using,
@@ -37,8 +38,14 @@ export class LeagueCommand extends Command
 
 	// tslint:disable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
 	@using(expect({ '<Summoner> ': 'String' }))
-	@using(function(message: Message, args: string[]): [Message, [string, string, Champion | number]]
+	@using(async function(this: LeagueCommand, message: Message, args: string[])
+		: Promise<[Message, [string, string, (Champion | number)]]>
 	{
+		const res: ResourceLoader = Lang.createResourceLoader(
+			await message.guild.storage.settings.get('lang')
+			|| this.client.defaultLang,
+		);
+
 		if (args.length === 1)
 		{
 			return [message, [this.plugin.api.options.defaultRegion, args[0], 1]];
@@ -73,9 +80,14 @@ export class LeagueCommand extends Command
 				return [message, [this.plugin.api.options.defaultRegion, args[0], champ]];
 			}
 
-			throw new Error(`\`${args[0]}\` is not a valid region as well as \`${args[1]}\` is not a valid champion or page.\n`
-				+ 'You have to specify either `[Region] <Summoner>` or `<Summoner> [Page | Champion]`');
-
+			throw new Error(
+				res('PLUGIN_LEAGUE_RESOLVE_TWO_ARGS',
+					{
+						region: args[0],
+						championOrPage: args[1],
+					},
+				),
+			);
 		}
 
 		let region: string = Region[args[0].toUpperCase() as any];
@@ -83,8 +95,16 @@ export class LeagueCommand extends Command
 		{
 			if (!Object.values(Region).includes(args[0].toLowerCase()))
 			{
-				throw new Error(`Error: in arg \`<Region>\`: \`${args[0]}\` could not be resolved to a valid Region.\n`
-					+ `Valid regions are ${Object.keys(Region).map((key: string) => `\`${key}\``).join(', ')}.`);
+				throw new Error(
+					res('EXPECT_ERR_INVALID_OPTION',
+						{
+							name: '<Region>',
+							arg: args[0],
+							usage: this.usage,
+							type: Object.keys(Region).map((key: string) => `\`${key}\``).join(', '),
+						},
+					),
+				);
 			}
 
 			region = args[0].toLowerCase();
@@ -107,83 +127,128 @@ export class LeagueCommand extends Command
 		}
 
 		throw new Error(
-			`Error: in arg \`<Page|Champion>\`: \`${args[2]}\` could not be resolved to a champion or page number.`,
+			res('PLUGIN_LEAGUE_RESOLVE_PAGE_OR_CHAMPION',
+				{
+					args: args[2],
+				},
+			),
 		);
 	})
 	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
-	public async action(message: Message, [region, query, input]: [Region, string, number | Champion]): Promise<void>
+	@localizable
+	public async action(message: Message, [res, region, query, input]
+		: [ResourceLoader, Region, string, number | Champion])
+		: Promise<void>
 	{
 		const summoner: Summoner = await this.plugin.api.getSummoner(region, query);
 		if (!summoner)
 		{
-			return message.channel.send('Failed to find a summoner by that name.')
+			return message.channel.send(res('PLUGIN_LEAGUE_NO_SUMMONER_FOUND'))
 				.then(() => undefined);
 		}
 
-		if (typeof input !== 'number') return this.champion(message, input, summoner);
-		return this.page(message, input, summoner);
+		if (typeof input !== 'number') return this.champion(res, message, input, summoner);
+		return this.page(res, message, input, summoner);
 	}
 
-	private async champion(message: Message, champion: Champion, summoner: Summoner): Promise<void>
+	private async champion(res: ResourceLoader, message: Message, champion: Champion, summoner: Summoner): Promise<void>
 	{
 		const mastery: ChampionMastery = await summoner.getChampionMastery(champion.id);
 		if (!mastery)
 		{
-			return message.channel.send(
-				'Could not find any information about that champ from this user, maybe they never played it?',
-			).then(() => undefined);
+			return message.channel.send(res('PLUGIN_LEAGUE_NO_MASTERY_FOUND')).then(() => undefined);
 		}
 
 		const strings: string[] = [
-			mastery.title,
 			'',
-			`${mastery.levelRepresentation} Total points: \`${mastery.points.toLocaleString()}\``,
+			res('PLUGIN_LEAGUE_TOTAL_MASTERY_POINTS',
+				{
+					level: mastery.levelEmoji || res('PLUGIN_LEAGUE_LEVEL', { level: mastery.level.toString() }),
+					points: mastery.points.toLocaleString(),
+				},
+			),
 		];
 
 		if (mastery.level < 5)
 		{
-			strings.push(`Points until next level: \`${mastery.pointsUntilNextLevel.toLocaleString()}\``);
+			strings.push(
+				res('PLUGIN_LEAGUE_MASTERY_POINTS_TO_NEXT_LEVEL',
+					{
+						points: mastery.pointsUntilNextLevel.toLocaleString(),
+					},
+				),
+			);
 		}
 		else if (mastery.level < 7)
 		{
 			const requiredTokens: number = mastery.level === 5 ? 2 : 3;
-			strings.push(`Tokens \`${mastery.tokensEarned}\`/\`${requiredTokens}\``);
+			strings.push(
+				res('PLUGIN_LEAGUE_CHAMPION_TOKEN_TO_NEXT_LEVEL',
+					{
+						current: mastery.tokensEarned.toString(),
+						require: requiredTokens.toString(),
+					},
+				),
+			);
 		}
-		strings.push(`Chest granted: ${mastery.chestGranted ? '`✅`' : '`❌`'}`);
+		strings.push(res('PLUGIN_LEAGUE_MASTERY_CHEST_GRANTED', { emoji: mastery.chestGranted ? '`✅`' : '`❌`' }));
 
 		const embed: RichEmbed = new RichEmbed()
-			.setAuthor(`${summoner.name} - ${mastery.name}`, summoner.profileIconURL)
+			.setAuthor(summoner.name, summoner.profileIconURL)
+			.setTitle(`${mastery.name} - ${mastery.title}`)
 			.setThumbnail(mastery.iconURL)
 			.setDescription(strings)
-			.setFooter('Last played at')
+			.setFooter(res('PLUGIN_LEAGUE_LAST_PLAYED'))
 			.setTimestamp(mastery.lastPlayedAt);
 
 		return message.channel.send({ embed })
 			.then(() => undefined);
 	}
 
-	private page(message: Message, requestedPage: number, summoner: Summoner): Promise<void>
+	private page(res: ResourceLoader, message: Message, requestedPage: number, summoner: Summoner): Promise<void>
 	{
 		const { masteries, maxPages, page }: { masteries: ChampionMastery[], maxPages: number, page: number } =
 			summoner.page(requestedPage);
 
 		let i: number = (page - 1) * 10;
-		const champs: string[] = masteries
-			.map((mastery: ChampionMastery) => `\`${Util.padRight(`${++i}.`, 3)}\u200b\` ${mastery}`);
+		const champs: string[] = [];
+		for (const mastery of masteries)
+		{
+			const masteryString: string = res('PLUGIN_LEAGUE_MASTERY_PRESENTATION',
+				{
+					level: mastery.levelEmoji || res('PLUGIN_LEAGUE_LEVEL', { level: mastery.level.toString() }),
+					name: mastery.name,
+					points: mastery.points.toLocaleString(),
+				},
+			);
+			champs.push(`\`${Util.padRight(`${++i}.`, 3)}\u200b\` ${masteryString}`);
+		}
 
-		champs.push('', `Page \`${page}\` of \`${maxPages}\``);
-
+		champs.push('', res('PLUGIN_LEAGUE_PAGE_INDICATOR',
+			{
+				currentPage: page.toString(),
+				maxPage: maxPages.toString(),
+			},
+		));
 		const embed: RichEmbed = new RichEmbed()
-			.setAuthor(`${summoner.name} - Level ${summoner.level}`, summoner.profileIconURL)
+			.setAuthor(res('PLUGIN_LEAGUE_PAGE_AUTHOR',
+				{
+					level: summoner.level.toString(),
+					name: summoner.name,
+				},
+			), summoner.profileIconURL)
 			.setThumbnail(summoner.profileIconURL)
-			.setDescription([
-				`Total champion mastery level: \`${summoner.masteryLevel}\``,
-			])
-			.addField(page === 1
-				? `Top 10 Champs`
-				: `Champs ${(page - 1) * 10 + 1} - ${(page - 1) * 10 + 10}`
-			, champs)
-			.setFooter('Last updated at')
+			.setDescription(res('PLUGIN_LEAGUE_TOTAL_MASTERY_LEVEL', { level: summoner.masteryLevel.toString() }))
+			.addField(res(page === 1
+				? `PLUGIN_LEAGUE_CHAMPIONS_TOP_TEN`
+				: `PLUGIN_LEAGUE_CHAMPIONS_FROM_TO`,
+				{
+					from: ((page - 1) * 10 + 1).toString(),
+					to: ((page - 1) * 10 + 10).toString(),
+				},
+			),
+			champs)
+			.setFooter(res('PLUGIN_LEAGUE_LAST_UPDATE'))
 			.setTimestamp(summoner.updatedAt);
 
 		return message.channel.send({ embed })

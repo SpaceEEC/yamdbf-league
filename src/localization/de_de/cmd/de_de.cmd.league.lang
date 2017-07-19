@@ -1,0 +1,44 @@
+##region general
+[PLUGIN_LEAGUE_LEVEL]
+Stufe {{ level }}
+
+[PLUGIN_LEAGUE_LAST_UPDATE]
+Zuletzt aktualisiert
+
+[PLUGIN_LEAGUE_LAST_PLAYED]
+Zuletzt gespielt
+##endregion general
+
+##region champ
+[PLUGIN_LEAGUE_TOTAL_MASTERY_POINTS]
+{{ level }} Insgesamte Punkte: `{{ points }}`
+
+[PLUGIN_LEAGUE_MASTERY_POINTS_TO_NEXT_LEVEL]
+Punkte benötigt bis zur nächsten Stufe: `{{ points }}`
+
+[PLUGIN_LEAGUE_CHAMPION_TOKEN_TO_NEXT_LEVEL]
+Token `{{ current }}`/`{{ required }}`
+
+[PLUGIN_LEAGUE_MASTERY_CHEST_GRANTED]
+Kiste erhalten: {{ emoji }}
+##endregion champ
+
+##region page
+[PLUGIN_LEAGUE_MASTERY_PRESENTATION]
+{{ level }}{{ name }} mit `{{ points }}` Punkten.
+
+[PLUGIN_LEAGUE_PAGE_INDICATOR]
+Seite `{{ currentPage }}` von `{{ maxPage }}`
+
+[PLUGIN_LEAGUE_PAGE_AUTHOR]
+{{ name }} - Stufe {{ level }}
+
+[PLUGIN_LEAGUE_TOTAL_MASTERY_LEVEL]
+Insgesamte Championstufe: `{{ level }}`
+
+[PLUGIN_LEAGUE_CHAMPIONS_TOP_TEN]
+Besten 10 Champions
+
+[PLUGIN_LEAGUE_CHAMPIONS_FROM_TO]
+Champions {{ from }} bis {{ to }}
+##endregion page

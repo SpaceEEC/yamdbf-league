@@ -1,6 +1,7 @@
 import { Util } from 'discord.js';
+import { join } from 'path';
 import { inspect } from 'util';
-import { Client, IPlugin, Logger, Plugin, PluginConstructor } from 'yamdbf';
+import { Client, IPlugin, Lang, Logger, Plugin, PluginConstructor } from 'yamdbf';
 
 import { LeagueCommand } from './commands/league';
 import { RiotAPI } from './RiotAPI';
@@ -70,15 +71,11 @@ export class LeaguePlugin extends Plugin implements IPlugin
 	 */
 	public async init(): Promise<void>
 	{
-		try
-		{
-			await this.api.init();
+		await this.api.init();
 
-			this.client.commands.registerExternal(this.client, new LeagueCommand(this));
-		}
-		catch (error)
-		{
-			Logger.instance().error('LeaguePlugin', 'Initializing failed:', inspect(error));
-		}
+		Lang.loadCommandLocalizationsFrom(join(__dirname, 'localization'));
+		Lang.loadLocalizationsFrom(join(__dirname, 'localization'));
+
+		this.client.commands.registerExternal(this.client, new LeagueCommand(this));
 	}
 }

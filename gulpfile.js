@@ -18,9 +18,9 @@ gulp.task('default', () => {
 		.pipe(sourcemaps.write({ sourceRoot: '../src/' }))
 		.pipe(gulp.dest('bin/'));
 
-	gulp.src('./src/**/*.js')
+	gulp.src('./src/**/*.lang')
 		.pipe(gulp.dest('bin/'));
 
-	gulp.src('./src/**/*.json')
+		gulp.src('./src/**/*.json')
 		.pipe(gulp.dest('bin/'));
 });

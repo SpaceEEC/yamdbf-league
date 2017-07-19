@@ -1,0 +1,44 @@
+##region general
+[PLUGIN_LEAGUE_LEVEL]
+Level {{ level }}
+
+[PLUGIN_LEAGUE_LAST_UPDATE]
+Last updated at
+
+[PLUGIN_LEAGUE_LAST_PLAYED]
+Last played at
+##endregion general
+
+##region champ
+[PLUGIN_LEAGUE_TOTAL_MASTERY_POINTS]
+{{ level }} Total points: `{{ points }}`
+
+[PLUGIN_LEAGUE_MASTERY_POINTS_TO_NEXT_LEVEL]
+Points until next level: `{{ points }}`
+
+[PLUGIN_LEAGUE_CHAMPION_TOKEN_TO_NEXT_LEVEL]
+Tokens `{{ current }}`/`{{ required }}`
+
+[PLUGIN_LEAGUE_MASTERY_CHEST_GRANTED]
+Chest granted: {{ emoji }}
+##endregion champ
+
+##region page
+[PLUGIN_LEAGUE_MASTERY_PRESENTATION]
+{{ level }}{{ name }} with `{{ points }}` Points.
+
+[PLUGIN_LEAGUE_PAGE_INDICATOR]
+Page `{{ currentPage }}` of `{{ maxPage }}`
+
+[PLUGIN_LEAGUE_PAGE_AUTHOR]
+{{ name }} - Level {{ level }}
+
+[PLUGIN_LEAGUE_TOTAL_MASTERY_LEVEL]
+Total champion mastery level: `{{ level }}`
+
+[PLUGIN_LEAGUE_CHAMPIONS_TOP_TEN]
+Top 10 Champions
+
+[PLUGIN_LEAGUE_CHAMPIONS_FROM_TO]
+Champions {{ from }} to {{ to }}
+##endregion page

@@ -1,0 +1,9 @@
+{
+	"league":
+	{
+		"de_de": {
+			"desc": "Zeigt Informationen über das Profil oder den Champion des gewünschten Beschwörers an.",
+			"usage": "<prefix>league [Region] <Beschwörer> [Seite | Champion]"
+		}
+	}
+}

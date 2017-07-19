@@ -1,0 +1,6 @@
+[PLUGIN_LEAGUE_RESOLVE_TWO_ARGS]
+`{{ region }}` ist keine gültige Region; und `{{ championOrPage }}` ist kein gültiger Champion oder Seite.
+Wenn du zwei Argumente verwendest achte bitte darauf `[Region] <Beschwörer>` oder `<Beschwörer> [Seite | Champion]` zu verwenden.
+
+[PLUGIN_LEAGUE_RESOLVE_PAGE_OR_CHAMPION]
+In Argument `<Seite | Champion>`: `{{ arg }}` konnte nicht zu einem Champion oder Seite aufgelöst werden.
