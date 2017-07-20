@@ -76,6 +76,6 @@ export class LeaguePlugin extends Plugin implements IPlugin
 		Lang.loadCommandLocalizationsFrom(join(__dirname, 'localization'));
 		Lang.loadLocalizationsFrom(join(__dirname, 'localization'));
 
-		this.client.commands.registerExternal(this.client, new LeagueCommand(this));
+		this.client.commands.registerExternal(new LeagueCommand(this));
 	}
 }
