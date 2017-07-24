@@ -1,6 +1,12 @@
 import { RichEmbed } from 'discord.js';
-import { Command, Lang, Message, ResourceLoader, Util } from 'yamdbf/bin';
-import {
+import { Command, CommandDecorators, Lang, Message, Middleware, ResourceLoader, Util } from 'yamdbf';
+
+import { LeaguePlugin } from '../LeaguePlugin';
+import { ChampionMastery } from '../structures/ChampionMastery';
+import { Summoner } from '../structures/Summoner';
+import { Champion, Region } from '../types';
+
+const {
 	aliases,
 	clientPermissions,
 	desc,
@@ -10,14 +16,8 @@ import {
 	name,
 	usage,
 	using,
-} from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
-
-import { LeaguePlugin } from '../LeaguePlugin';
-import { ChampionMastery } from '../structures/ChampionMastery';
-import { Summoner } from '../structures/Summoner';
-import { Champion, Region } from '../types';
+} = CommandDecorators;
+const { expect, resolve } = Middleware;
 
 @aliases('lol')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
