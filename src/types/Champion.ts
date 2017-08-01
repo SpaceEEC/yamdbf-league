@@ -3,11 +3,15 @@
  */
 export type Champion = {
 	/**
-	 * Actual ID
+	 * Game version, this champion data is for
 	 */
-	id: number,
+	version: string,
 	/**
 	 * Internal Name
+	 */
+	id: string,
+	/**
+	 * Actual ID
 	 */
 	key: string,
 	/**
@@ -19,6 +23,17 @@ export type Champion = {
 	 * Title text of this champion
 	 */
 	title: string,
+	/**
+	 * Blurb of this champion, generic text.
+	 * With html tags, because riot can.
+	 */
+	blurb: string,
+	info: {
+		attack: number,
+		defense: number,
+		magic: number,
+		difficutly: number,
+	}
 	/**
 	 * Image data
 	 */
@@ -39,5 +54,39 @@ export type Champion = {
 		w: number,
 		y: number,
 		x: number,
+	},
+	/**
+	 * Array of tags
+	 * ex. "Figther", "Tank", etc
+	 */
+	tags: string[],
+	/**
+	 * The partype
+	 * ex. "Mana"
+	 */
+	partype: string,
+	/**
+	 * Be warned, no proper casing inbound.
+	 */
+	stats: {
+		hp: number,
+		hpperlevel: number,
+		mp: number,
+		mpperlevel: number,
+		movespeed: number,
+		armor: number,
+		spellblock: number,
+		spellblockperlevel: number,
+		attackrange: number,
+		hpregen: number,
+		hpregenperlevel: number,
+		mpregen: number,
+		mprgenperlevel: number,
+		crit: number,
+		critperlevel: number,
+		attackdamage: number,
+		attackdamageperlevel: number,
+		attackspeedoffset: number,
+		attackspeedperlevel: number,
 	},
 };

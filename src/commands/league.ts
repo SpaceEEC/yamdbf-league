@@ -62,6 +62,7 @@ export class LeagueCommand extends Command
 				// [Region, Summoner]
 				return [message, [args[0].toLowerCase(), args[1], 1]];
 			}
+
 			if (!isNaN(parseInt(args[1])))
 			{
 				// [Summoner, Page]
@@ -71,13 +72,13 @@ export class LeagueCommand extends Command
 					'<Page>': 'Number',
 				})).call(this, message, [this.plugin.api.options.defaultRegion, args[0], args[1]]);
 			}
-			if (this.plugin.api.champs.find((_champion: Champion) =>
-				_champion.name.toLowerCase() === args[1].toLowerCase()))
+
+			const champion: Champion = this.plugin.api.champs.find((_champion: Champion) =>
+				_champion.name.toLowerCase() === args[1].toLowerCase());
+			if (champion)
 			{
-				const champ: Champion = this.plugin.api.champs.find((_champion: Champion) =>
-					_champion.name.toLowerCase() === args[1].toLowerCase());
 				// [Summoner, Champion]
-				return [message, [this.plugin.api.options.defaultRegion, args[0], champ]];
+				return [message, [this.plugin.api.options.defaultRegion, args[0], champion]];
 			}
 
 			throw new Error(
@@ -118,12 +119,12 @@ export class LeagueCommand extends Command
 				'<Page>': 'Number',
 			})).call(this, message, [region, args[1], args[2]]);
 		}
-		if (this.plugin.api.champs.find((_champion: Champion) =>
-			_champion.name.toLowerCase() === args[2].toLowerCase()))
+
+		const champion: Champion = this.plugin.api.champs.find((_champion: Champion) =>
+			_champion.name.toLowerCase() === args[2].toLowerCase());
+		if (champion)
 		{
-			const champ: Champion = this.plugin.api.champs.find((_champion: Champion) =>
-				_champion.name.toLowerCase() === args[2].toLowerCase());
-			return [message, [region, args[1], champ]];
+			return [message, [region, args[1], champion]];
 		}
 
 		throw new Error(
@@ -153,7 +154,7 @@ export class LeagueCommand extends Command
 
 	private async champion(res: ResourceLoader, message: Message, champion: Champion, summoner: Summoner): Promise<void>
 	{
-		const mastery: ChampionMastery = await summoner.getChampionMastery(champion.id);
+		const mastery: ChampionMastery = await summoner.getChampionMastery(Number(champion.key));
 		if (!mastery)
 		{
 			return message.channel.send(res('PLUGIN_LEAGUE_NO_MASTERY_FOUND')).then(() => undefined);

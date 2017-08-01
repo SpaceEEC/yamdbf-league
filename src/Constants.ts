@@ -19,7 +19,7 @@ export class Constants
 	 */
 	public static host(region: Region): string
 	{
-		return `https://${region}.api.riotgames.com/lol/`;
+		return `https://${region}.api.riotgames.com/lol`;
 	}
 
 	/**
@@ -30,18 +30,17 @@ export class Constants
 	 */
 	public static realmsSource(region: Region): string
 	{
-		return `${Constants.host(region)}static-data/v3/realms`;
+		return `${Constants.host(region)}/static-data/v3/realms`;
 	}
 
 	/**
 	 * Returns the URL to fetch champion data from
-	 * @param {Region} region desired region
 	 * @returns {string}
 	 * @static
 	 */
-	public static championDataSource(region: Region): string
+	public static championDataSource(): string
 	{
-		return `${Constants.host(region)}static-data/v3/champions?tags=image`;
+		return `${Constants.realms.cdn}/${Constants.realms.n.champion}/data/en_US/champion.json`;
 	}
 
 	/**
@@ -52,7 +51,7 @@ export class Constants
 	 */
 	public static summonerByName(region: Region, name: string): string
 	{
-		return `${Constants.host(region)}summoner/v3/summoners/by-name/${encodeURIComponent(name)}`;
+		return `${Constants.host(region)}/summoner/v3/summoners/by-name/${encodeURIComponent(name)}`;
 	}
 
 	/**
@@ -64,7 +63,7 @@ export class Constants
 	 */
 	public static totalMasteryLevel(region: Region, id: number): string
 	{
-		return `${Constants.host(region)}champion-mastery/v3/scores/by-summoner/${id}`;
+		return `${Constants.host(region)}/champion-mastery/v3/scores/by-summoner/${id}`;
 	}
 
 	/**
@@ -76,7 +75,7 @@ export class Constants
 	 */
 	public static allMasteries(region: Region, id: number): string
 	{
-		return `${Constants.host(region)}champion-mastery/v3/champion-masteries/by-summoner/${id}`;
+		return `${Constants.host(region)}/champion-mastery/v3/champion-masteries/by-summoner/${id}`;
 	}
 
 	/**
@@ -89,7 +88,10 @@ export class Constants
 	 */
 	public static oneMastery(region: Region, userId: number, champId: number): string
 	{
-		return `${Constants.host(region)}champion-mastery/v3/champion-masteries/by-summoner/${userId}/by-champion/${champId}`;
+		return [
+			`${Constants.host(region)}/champion-mastery/v3/`,
+			`champion-masteries/by-summoner/${userId}/by-champion/${champId}`,
+		].join('');
 	}
 
 	/**

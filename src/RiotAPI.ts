@@ -63,13 +63,15 @@ export class RiotAPI
 		Constants.realms = await this.request<Realms>(realmsSource(this.options.defaultRegion));
 		this.logger.debug('LeaguePlugin', 'Using realm version', Constants.realms.v);
 
-		const { data }: Champions = await this.request<Champions>(championDataSource(this.options.defaultRegion));
+		const { data }: Champions = await this.request<Champions>(championDataSource());
 		for (const champion of Object.values<Champion>(data))
 		{
-			this.champs.set(champion.id, champion);
+			const id: number = Number(champion.key);
+			if (isNaN(id)) continue;
+			this.champs.set(id, champion);
 		}
 
-		this.logger.info('LeaguePlugin', 'Champions successfully cached for region:', this.options.defaultRegion);
+		this.logger.info('LeaguePlugin', 'Champions successfully cached.');
 	}
 
 	/**

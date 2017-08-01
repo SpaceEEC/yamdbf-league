@@ -8,6 +8,10 @@ export type Champions = {
 	 */
 	type: 'champion',
 	/**
+	 * Form of this champion's collection
+	 */
+	format: 'standAloneComplex'
+	/**
 	 * Champion data version
 	 */
 	version: string,
@@ -15,6 +19,6 @@ export type Champions = {
 	 * K/V data object holding the champion data
 	 */
 	data: {
-		[id: number]: Champion,
+		[internalName: string]: Champion,
 	},
 };
