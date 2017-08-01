@@ -216,7 +216,7 @@ export class LeagueCommand extends Command
 		{
 			const masteryString: string = res('PLUGIN_LEAGUE_MASTERY_PRESENTATION',
 				{
-					level: mastery.levelEmoji || res('PLUGIN_LEAGUE_LEVEL', { level: mastery.level.toString() }),
+					level: mastery.levelEmoji || res('PLUGIN_LEAGUE_LEVEL', { level: `${mastery.level} ` }),
 					name: mastery.name,
 					points: mastery.points.toLocaleString(),
 				},
