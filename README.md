@@ -1,12 +1,12 @@
 # yamdbf-league
-YAMDBF league plugin that allows users to see their and other champion masteries by using commands.
+A YAMDBF league plugin which allows users to easily retrieve their and others champion masteries from [League of Legends](https://leagueoflegends.com).
 
 # Installing
 - Install the package via `npm` (requires `git` to be installed):
 ```
 npm i -S SpaceEEC/yamdbf-league
 ```
-> Note: YAMDBF 3.0.0 is required to use this plugin, since plugin support was/will be added with that version.
+> Note: YAMDBF 3.0.0 is required to use this plugin since plugin support was/will be added with that version.
 
 - Add it to your client's plugins, here a small example:
 ```ts
@@ -20,9 +20,10 @@ const client: Client = new Client({
 > Note: This plugin's build method is being exported as `League`, and `default`.
 
 # Command
-Currently just one command, maybe I'll add more later.
+Currently just one command, maybe I'll add more later on.
 
 `<prefix>league [Region] <Summoner> [Page | Champion]`
+> Aliased with `lol`
 
 For example: `<prefix>league euw test 2`
 
@@ -88,7 +89,7 @@ A key value object structured the following way:
 	level7: 'replaceString',
 }
 ```
->Note: Every key is optional.
+>Note: Every key is optional; You may want to have a trailing space if you don't use an emoji.
 
 The passed strings will be used to replace the `Level n` (where n is 4-7) representation of champion masteries.
 
