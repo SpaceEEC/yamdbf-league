@@ -117,7 +117,7 @@ export class ChampionMastery
 	}
 
 	/**
-	 * URL pointing to the url of the champion this mastery belongs to
+	 * URL pointing to the icon of the champion this mastery belongs to
 	 * @readonly
 	 */
 	public get iconURL(): string
