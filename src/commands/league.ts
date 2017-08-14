@@ -2,6 +2,7 @@ import { RichEmbed } from 'discord.js';
 import { Command, CommandDecorators, Lang, Message, Middleware, ResourceLoader, Util } from 'yamdbf';
 
 import { LeaguePlugin } from '../LeaguePlugin';
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { ChampionMastery } from '../structures/ChampionMastery';
 import { Summoner } from '../structures/Summoner';
 import { Champion, Region } from '../types';
@@ -82,7 +83,7 @@ export class LeagueCommand extends Command
 			}
 
 			throw new Error(
-				res('PLUGIN_LEAGUE_RESOLVE_TWO_ARGS',
+				res(S.PLUGIN_LEAGUE_RESOLVE_TWO_ARGS,
 					{
 						region: args[0],
 						championOrPage: args[1],
@@ -97,7 +98,7 @@ export class LeagueCommand extends Command
 			if (!Object.values(Region).includes(args[0].toLowerCase()))
 			{
 				throw new Error(
-					res('EXPECT_ERR_INVALID_OPTION',
+					res(S.EXPECT_ERR_INVALID_OPTION,
 						{
 							name: '<Region>',
 							arg: args[0],
@@ -128,7 +129,7 @@ export class LeagueCommand extends Command
 		}
 
 		throw new Error(
-			res('PLUGIN_LEAGUE_RESOLVE_PAGE_OR_CHAMPION',
+			res(S.PLUGIN_LEAGUE_RESOLVE_PAGE_OR_CHAMPION,
 				{
 					args: args[2],
 				},
@@ -144,7 +145,7 @@ export class LeagueCommand extends Command
 		const summoner: Summoner = await this.plugin.api.getSummoner(region, query);
 		if (!summoner)
 		{
-			return message.channel.send(res('PLUGIN_LEAGUE_NO_SUMMONER_FOUND'))
+			return message.channel.send(res(S.PLUGIN_LEAGUE_NO_SUMMONER_FOUND))
 				.then(() => undefined);
 		}
 
@@ -157,14 +158,15 @@ export class LeagueCommand extends Command
 		const mastery: ChampionMastery = await summoner.getChampionMastery(Number(champion.key));
 		if (!mastery)
 		{
-			return message.channel.send(res('PLUGIN_LEAGUE_NO_MASTERY_FOUND')).then(() => undefined);
+			return message.channel.send(res(S.PLUGIN_LEAGUE_NO_MASTERY_FOUND)).then(() => undefined);
 		}
 
 		const strings: string[] = [
 			'',
-			res('PLUGIN_LEAGUE_TOTAL_MASTERY_POINTS',
+			res(
+				S.PLUGIN_LEAGUE_TOTAL_MASTERY_POINTS,
 				{
-					level: mastery.levelEmoji || res('PLUGIN_LEAGUE_LEVEL', { level: mastery.level.toString() }),
+					level: mastery.levelEmoji || res(S.PLUGIN_LEAGUE_LEVEL, { level: mastery.level.toString() }),
 					points: mastery.points.toLocaleString(),
 				},
 			),
@@ -173,7 +175,7 @@ export class LeagueCommand extends Command
 		if (mastery.level < 5)
 		{
 			strings.push(
-				res('PLUGIN_LEAGUE_MASTERY_POINTS_TO_NEXT_LEVEL',
+				res(S.PLUGIN_LEAGUE_MASTERY_POINTS_TO_NEXT_LEVEL,
 					{
 						points: mastery.pointsUntilNextLevel.toLocaleString(),
 					},
@@ -184,7 +186,8 @@ export class LeagueCommand extends Command
 		{
 			const requiredTokens: number = mastery.level === 5 ? 2 : 3;
 			strings.push(
-				res('PLUGIN_LEAGUE_CHAMPION_TOKEN_TO_NEXT_LEVEL',
+				res(
+					S.PLUGIN_LEAGUE_CHAMPION_TOKEN_TO_NEXT_LEVEL,
 					{
 						current: mastery.tokensEarned.toString(),
 						require: requiredTokens.toString(),
@@ -192,14 +195,14 @@ export class LeagueCommand extends Command
 				),
 			);
 		}
-		strings.push(res('PLUGIN_LEAGUE_MASTERY_CHEST_GRANTED', { emoji: mastery.chestGranted ? '`✅`' : '`❌`' }));
+		strings.push(res(S.PLUGIN_LEAGUE_MASTERY_CHEST_GRANTED, { emoji: mastery.chestGranted ? '`✅`' : '`❌`' }));
 
 		const embed: RichEmbed = new RichEmbed()
 			.setAuthor(summoner.name, summoner.profileIconURL)
 			.setTitle(`${mastery.name} - ${mastery.title}`)
 			.setThumbnail(mastery.iconURL)
 			.setDescription(strings)
-			.setFooter(res('PLUGIN_LEAGUE_LAST_PLAYED'))
+			.setFooter(res(S.PLUGIN_LEAGUE_LAST_PLAYED))
 			.setTimestamp(mastery.lastPlayedAt);
 
 		return message.channel.send({ embed })
@@ -215,9 +218,9 @@ export class LeagueCommand extends Command
 		const champs: string[] = [];
 		for (const mastery of masteries)
 		{
-			const masteryString: string = res('PLUGIN_LEAGUE_MASTERY_PRESENTATION',
+			const masteryString: string = res(S.PLUGIN_LEAGUE_MASTERY_PRESENTATION,
 				{
-					level: mastery.levelEmoji || res('PLUGIN_LEAGUE_LEVEL', { level: `${mastery.level} ` }),
+					level: mastery.levelEmoji || res(S.PLUGIN_LEAGUE_LEVEL, { level: `${mastery.level} ` }),
 					name: mastery.name,
 					points: mastery.points.toLocaleString(),
 				},
@@ -225,31 +228,31 @@ export class LeagueCommand extends Command
 			champs.push(`\`${Util.padRight(`${++i}.`, 3)}\u200b\` ${masteryString}`);
 		}
 
-		champs.push('', res('PLUGIN_LEAGUE_PAGE_INDICATOR',
+		champs.push('', res(S.PLUGIN_LEAGUE_PAGE_INDICATOR,
 			{
 				currentPage: page.toString(),
 				maxPage: maxPages.toString(),
 			},
 		));
 		const embed: RichEmbed = new RichEmbed()
-			.setAuthor(res('PLUGIN_LEAGUE_PAGE_AUTHOR',
+			.setAuthor(res(S.PLUGIN_LEAGUE_PAGE_AUTHOR,
 				{
 					level: summoner.level.toString(),
 					name: summoner.name,
 				},
 			), summoner.profileIconURL)
 			.setThumbnail(summoner.profileIconURL)
-			.setDescription(res('PLUGIN_LEAGUE_TOTAL_MASTERY_LEVEL', { level: summoner.masteryLevel.toString() }))
+			.setDescription(res(S.PLUGIN_LEAGUE_TOTAL_MASTERY_LEVEL, { level: summoner.masteryLevel.toString() }))
 			.addField(res(page === 1
-				? `PLUGIN_LEAGUE_CHAMPIONS_TOP_TEN`
-				: `PLUGIN_LEAGUE_CHAMPIONS_FROM_TO`,
+				? S.PLUGIN_LEAGUE_CHAMPIONS_TOP_TEN
+				: S.PLUGIN_LEAGUE_CHAMPIONS_FROM_TO,
 				{
 					from: ((page - 1) * 10 + 1).toString(),
 					to: ((page - 1) * 10 + 10).toString(),
 				},
 			),
 			champs)
-			.setFooter(res('PLUGIN_LEAGUE_LAST_UPDATE'))
+			.setFooter(res(S.PLUGIN_LEAGUE_LAST_UPDATE))
 			.setTimestamp(summoner.updatedAt);
 
 		return message.channel.send({ embed })
