@@ -15,12 +15,12 @@ gulp.task('default', () => {
 	tsCompile.pipe(gulp.dest('bin/'));
 
 	tsCompile.js
-		.pipe(sourcemaps.write({ sourceRoot: '../src/' }))
+		.pipe(sourcemaps.write('../bin/', { sourceRoot: '../src/' }))
 		.pipe(gulp.dest('bin/'));
 
 	gulp.src('./src/**/*.lang')
 		.pipe(gulp.dest('bin/'));
 
-		gulp.src('./src/**/*.json')
+	gulp.src('./src/**/*.json')
 		.pipe(gulp.dest('bin/'));
 });
