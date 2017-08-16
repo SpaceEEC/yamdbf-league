@@ -177,7 +177,7 @@ export class LeagueGameCommand extends Command
 			.setTitle(`${currentGame.mapName} - ${currentGame.gameMode}`)
 			.setDescription(`**${this._formatDuration(currentGame.gameLength)}**`)
 			.addField(res(S.PLUGIN_LEAGUE_PICKS_BLUE), blueParticipants.join('\n'), true)
-			.setFooter(S.PLUGIN_LEAGUE_EMBED_GENERATED_AT)
+			.setFooter(res(S.PLUGIN_LEAGUE_EMBED_GENERATED_AT))
 			.setTimestamp();
 
 		if (blueBans.length || redBans.length)
