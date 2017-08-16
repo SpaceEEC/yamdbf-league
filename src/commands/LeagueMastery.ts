@@ -3,9 +3,10 @@ import { Command, CommandDecorators, Lang, Message, Middleware, ResourceLoader, 
 
 import { LeaguePlugin } from '../LeaguePlugin';
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { Champion } from '../structures/Champion';
 import { ChampionMastery } from '../structures/ChampionMastery';
 import { Summoner } from '../structures/Summoner';
-import { Champion, Region } from '../types';
+import { Region } from '../types';
 
 const {
 	aliases,
@@ -20,14 +21,18 @@ const {
 } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
-@aliases('lol')
+@aliases(
+	'leagueChamps',
+	'league-champs',
+	'lolChamps',
+	'lol-champs')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays generic information about the specified summoner\'s champs.')
-@name('league')
+@name('lol')
 @group('league')
 @guildOnly
 @usage('<prefix>league [Region] <Summoner> [Page | Champion]')
-export class LeagueCommand extends Command
+export class LeagueMasteryCommand extends Command
 {
 	private readonly plugin: LeaguePlugin;
 
@@ -38,8 +43,8 @@ export class LeagueCommand extends Command
 	}
 
 	// tslint:disable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
-	@using(expect({ '<Summoner> ': 'String' }))
-	@using(async function(this: LeagueCommand, message: Message, args: string[])
+	@using(expect({ '<Summoner>': 'String' }))
+	@using(async function(this: LeagueMasteryCommand, message: Message, args: string[])
 		: Promise<[Message, [string, string, (Champion | number)]]>
 	{
 		const res: ResourceLoader = Lang.createResourceLoader(
@@ -74,7 +79,7 @@ export class LeagueCommand extends Command
 				})).call(this, message, [this.plugin.api.options.defaultRegion, args[0], args[1]]);
 			}
 
-			const champion: Champion = this.plugin.api.champs.find((_champion: Champion) =>
+			const champion: Champion = this.plugin.api.champions.find((_champion: Champion) =>
 				_champion.name.toLowerCase() === args[1].toLowerCase());
 			if (champion)
 			{
@@ -121,7 +126,7 @@ export class LeagueCommand extends Command
 			})).call(this, message, [region, args[1], args[2]]);
 		}
 
-		const champion: Champion = this.plugin.api.champs.find((_champion: Champion) =>
+		const champion: Champion = this.plugin.api.champions.find((_champion: Champion) =>
 			_champion.name.toLowerCase() === args[2].toLowerCase());
 		if (champion)
 		{
@@ -155,7 +160,7 @@ export class LeagueCommand extends Command
 
 	private async champion(res: ResourceLoader, message: Message, champion: Champion, summoner: Summoner): Promise<void>
 	{
-		const mastery: ChampionMastery = await summoner.getChampionMastery(Number(champion.key));
+		const mastery: ChampionMastery = await summoner.getChampionMastery(champion.id);
 		if (!mastery)
 		{
 			return message.channel.send(res(S.PLUGIN_LEAGUE_NO_MASTERY_FOUND)).then(() => undefined);
@@ -198,7 +203,7 @@ export class LeagueCommand extends Command
 		strings.push(res(S.PLUGIN_LEAGUE_MASTERY_CHEST_GRANTED, { emoji: mastery.chestGranted ? '`✅`' : '`❌`' }));
 
 		const embed: RichEmbed = new RichEmbed()
-			.setAuthor(summoner.name, summoner.profileIconURL)
+			.setAuthor(summoner.name, summoner.iconURL)
 			.setTitle(`${mastery.name} - ${mastery.title}`)
 			.setThumbnail(mastery.iconURL)
 			.setDescription(strings)
@@ -209,8 +214,10 @@ export class LeagueCommand extends Command
 			.then(() => undefined);
 	}
 
-	private page(res: ResourceLoader, message: Message, requestedPage: number, summoner: Summoner): Promise<void>
+	private async page(res: ResourceLoader, message: Message, requestedPage: number, summoner: Summoner): Promise<void>
 	{
+		if (!summoner.isdMasteryDataFetched) await summoner.fetchAllChampionMasteryData;
+
 		const { masteries, maxPages, page }: { masteries: ChampionMastery[], maxPages: number, page: number } =
 			summoner.page(requestedPage);
 
@@ -240,8 +247,8 @@ export class LeagueCommand extends Command
 					level: summoner.level.toString(),
 					name: summoner.name,
 				},
-			), summoner.profileIconURL)
-			.setThumbnail(summoner.profileIconURL)
+			), summoner.iconURL)
+			.setThumbnail(summoner.iconURL)
 			.setDescription(res(S.PLUGIN_LEAGUE_TOTAL_MASTERY_LEVEL, { level: summoner.masteryLevel.toString() }))
 			.addField(res(page === 1
 				? S.PLUGIN_LEAGUE_CHAMPIONS_TOP_TEN

@@ -22,6 +22,8 @@ export class Constants
 		return `https://${region}.api.riotgames.com/lol`;
 	}
 
+	// region source
+
 	/**
 	 * Returns the URL to fetch the realms from.
 	 * @param {Region} region desired region
@@ -44,6 +46,21 @@ export class Constants
 	}
 
 	/**
+	 * Returns the URL to fetch summoner spell data from
+	 * @param {Region} region desired region
+	 * @returns {string}
+	 * @static
+	 */
+	public static summonerSpellDataSource(region: Region): string
+	{
+		return `${Constants.realms.cdn}/${Constants.realms.n.summoner}/data/en_US/summoner.json`;
+	}
+
+	// region endregion
+
+	// region data
+
+	/**
 	 * Returns the URL to fetch a summoner by their name.
 	 * @param {Region} region desired region
 	 * @param {string} name
@@ -57,41 +74,69 @@ export class Constants
 	/**
 	 * Returns the URL to fetch the total mastery level of a summoner by their id.
 	 * @param {Region} region desired region
-	 * @param {number} id
+	 * @param {number} summonerId
 	 * @returns {string}
 	 * @static
 	 */
-	public static totalMasteryLevel(region: Region, id: number): string
+	public static totalMasteryLevelById(region: Region, summonerId: number): string
 	{
-		return `${Constants.host(region)}/champion-mastery/v3/scores/by-summoner/${id}`;
+		return `${Constants.host(region)}/champion-mastery/v3/scores/by-summoner/${summonerId}`;
 	}
 
 	/**
 	 * Returns URL to fetch all masteries from a summoner by their id.
 	 * @param {Region} region desired region
-	 * @param {number} id
+	 * @param {number} summonerId
 	 * @returns {string}
 	 * @static
 	 */
-	public static allMasteries(region: Region, id: number): string
+	public static allMasteriesBySummonerId(region: Region, summonerId: number): string
 	{
-		return `${Constants.host(region)}/champion-mastery/v3/champion-masteries/by-summoner/${id}`;
+		return `${Constants.host(region)}/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`;
 	}
 
 	/**
 	 * Returns the request url to fetch one specific mastery of a summoner.
 	 * @param {Region} region desired region
-	 * @param {number} userId
-	 * @param {number} champId
+	 * @param {number} summonerId
+	 * @param {number} championId
 	 * @returns {string}
 	 * @static
 	 */
-	public static oneMastery(region: Region, userId: number, champId: number): string
+	public static masteryByChampionId(region: Region, summonerId: number, championId: number): string
 	{
 		return [
 			`${Constants.host(region)}/champion-mastery/v3/`,
-			`champion-masteries/by-summoner/${userId}/by-champion/${champId}`,
+			`champion-masteries/by-summoner/${summonerId}/by-champion/${championId}`,
 		].join('');
+	}
+
+	/**
+	 * Returns the request url to fetch the current game of a summoner by id.
+	 * @param {Region} region
+	 * @param {number} summonerId
+	 * @returns {string}
+	 * @static
+	 */
+	public static currentGameBySummonerId(region: Region, summonerId: number): string
+	{
+		return `${Constants.host(region)}/spectator/v3/active-games/by-summoner/${summonerId}`;
+	}
+
+	// endregion data
+
+	// region cdn
+
+	/**
+	 * Generates the url to the summoner spell icon by file name.
+	 * @param {string} file file name
+	 * @returns {string}
+	 * @static
+	 */
+	public static summonerSpellIconURL(file: string): string
+	{
+		// summoner version?
+		return `${Constants.realms.cdn}/${Constants.realms.n.summoner}/img/spell/${file}`;
 	}
 
 	/**
@@ -115,4 +160,17 @@ export class Constants
 	{
 		return `${Constants.realms.cdn}/${Constants.realms.n.champion}/img/champion/${file}`;
 	}
+
+	/**
+	 * Generates the url to the map icon by its id.
+	 * @param {number} mapId
+	 * @returns {string}
+	 * @static
+	 */
+	public static mapIconURL(mapId: number): string
+	{
+		return `${Constants.realms.cdn}/${Constants.realms.n.map}/img/map/map${mapId}.png`;
+	}
+
+	// endregion cdn
 }

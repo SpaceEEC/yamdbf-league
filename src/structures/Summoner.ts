@@ -1,36 +1,40 @@
+import { Collection } from 'discord.js';
+
 import { Constants } from '../Constants';
 import { RiotAPI } from '../RiotAPI';
-import { MasteryData, Region, SummonerData } from '../types';
+import { CurrentGameInfo, MasteryData, Region, SummonerData } from '../types';
+import { BaseSummoner } from './BaseSummoner';
 import { ChampionMastery } from './ChampionMastery';
+import { CurrentGame } from './CurrentGame';
+import { GameParticipant } from './GameParticipant';
 
-const { profileIconURL, oneMastery, allMasteries, totalMasteryLevel } = Constants;
+const { masteryByChampionId, allMasteriesBySummonerId, totalMasteryLevelById, currentGameBySummonerId } = Constants;
 
 /**
  * Represents a League of Legends summoner
  */
-export class Summoner
+export class Summoner extends BaseSummoner
 {
+	/**
+	 * Cache of already fetched summoners
+	 * keyed as "region-queryname"
+	 * @static
+	 * @readonly
+	 */
+	public static readonly cache: Collection<string, Summoner> = new Collection<string, Summoner>();
+	/**
+	 * Set of all cached ongoing games
+	 * @private
+	 * @static
+	 * @readonly
+	 */
+	private static readonly _currentGames: Collection<number, CurrentGame> = new Collection<number, CurrentGame>();
+
 	/**
 	 * Account id of this summoner
 	 * @readonly
 	 */
 	public readonly accountdId: number;
-	/**
-	 * Id of this summoner
-	 * @readonly
-	 */
-	public readonly id: number;
-	/**
-	 * Name of this summoner
-	 * @readonly
-	 */
-	public readonly name: string;
-	/**
-	 * Profile icon id of this summoner
-	 * (See also get profileIconURL)
-	 * @readonly
-	 */
-	public readonly profileIconId: number;
 	/**
 	 * Summoner level of this summoner
 	 * @readonly
@@ -41,7 +45,6 @@ export class Summoner
 	 * @readonly
 	 */
 	public readonly updatedTimestamp: number;
-
 	/**
 	 * Total mastery level of this summoner
 	 */
@@ -51,19 +54,22 @@ export class Summoner
 	 * @readonly
 	 */
 	public readonly masteries: ChampionMastery[] = [];
-
 	/**
 	 * The region this summoner belongs to
 	 * @readonly
 	 */
 	public readonly region: Region;
+	/**
+	 * Whether champion mastery data has already been fetched for this summoner
+	 */
+	public isdMasteryDataFetched: boolean = false;
 
 	/**
-	 * Reference to the RiotAPI class' instance
-	 * @private
+	 * ID of the current game this Summoner participates in
 	 * @readonly
+	 * @private
 	 */
-	private readonly _api: RiotAPI;
+	private _currentGame: number;
 
 	/**
 	 * Instantiates a new Summoner.
@@ -73,32 +79,30 @@ export class Summoner
 	 */
 	public constructor(api: RiotAPI, region: Region, data: SummonerData)
 	{
-		this._api = api;
+		super(api, data);
+
 		this.region = region;
 
 		this.accountdId = data.accountId;
-		this.id = data.id;
-		this.name = data.name;
-		this.profileIconId = data.profileIconId;
 		this.level = data.summonerLevel;
 		this.updatedTimestamp = data.revisionDate;
 	}
 
 	/**
-	 * Initiates this summoner by fetching additional data, such as champion masteries and mastery level.
+	 * Fetches all champion data of this champion.
 	 * @returns {Promise<void>}
 	 */
-	public async init(): Promise<void>
+	public async fetchAllChampionMasteryData(): Promise<void>
 	{
 		const [masteryLevel, masteries]: [number, MasteryData[]] = await Promise.all([
-			this._api.request<number>(totalMasteryLevel(this.region, this.id)),
-			this._api.request<MasteryData[]>(allMasteries(this.region, this.id)),
+			this.api.request<number>(totalMasteryLevelById(this.region, this.id)),
+			this.api.request<MasteryData[]>(allMasteriesBySummonerId(this.region, this.id)),
 		]);
 
 		this.masteryLevel = masteryLevel;
 		for (const mastery of masteries)
 		{
-			this.masteries.push(new ChampionMastery(this._api, this, mastery));
+			this.masteries.push(new ChampionMastery(this.api, this, mastery));
 		}
 	}
 
@@ -109,31 +113,84 @@ export class Summoner
 	 */
 	public async getChampionMastery(id: number): Promise<ChampionMastery>
 	{
-		let mastery: ChampionMastery = this.masteries.find((_mastery: ChampionMastery) => _mastery.id === id);
+		let mastery: ChampionMastery = this.masteries.find((_mastery: ChampionMastery) => _mastery.champion.id === id);
 		if (mastery)
 		{
-			this._api.logger.debug('LeaguePlugin', `From cache: "${this.region}-${this.name}: ${mastery.name}"`);
-			return Promise.resolve(mastery);
+			this.api.logger.debug('LeaguePlugin', `Champion mastery from cache: "${this.region}-${this.name}: ${mastery.name}"`);
+			return mastery;
 		}
 
-		const data: MasteryData = await this._api.request<MasteryData>(oneMastery(this.region, this.id, id))
+		const data: MasteryData = await this.api.request<MasteryData>(masteryByChampionId(this.region, this.id, id))
 			.catch((error: any) =>
 			{
 				if (error.status === 404) return null;
 				throw error;
 			});
 		if (!data) return null;
-		mastery = new ChampionMastery(this._api, this, data);
+
+		mastery = new ChampionMastery(this.api, this, data);
 
 		this.masteries.push(mastery);
 		this.masteries.sort((a: ChampionMastery, b: ChampionMastery) => a.points - b.points);
 
-		this._api.logger.debug('LeaguePlugin', `Cached: "${this.region}-${this.name}: ${mastery.name}"`);
+		this.api.logger.debug('LeaguePlugin', `Cached champion mastery: "${this.region}-${this.name}: ${mastery.name}"`);
 		return mastery;
 	}
 
 	/**
-	 * Gets the requested page
+	 * Gets or fetches the currently played game info of this summoner.
+	 * Is null when the summoner is not currently in a game.
+	 * @returns {Promise<?CurrentGame>}
+	 */
+	public async getCurrentGame(): Promise<CurrentGame>
+	{
+		let currentGame: CurrentGame;
+		if (this._currentGame)
+		{
+			currentGame = Summoner._currentGames.get(this._currentGame);
+			if (currentGame)
+			{
+				this.api.logger.debug('LeaguePlugin',
+					`Current game from cache "${this.region}-${this.name}: ${currentGame.mapName}`);
+				return currentGame;
+			}
+			this._currentGame = null;
+		}
+		else
+		{
+			for (const game of Summoner._currentGames.values())
+			{
+				for (const participant of game.participants)
+				{
+					if (participant.id === this.id)
+					{
+						this._currentGame = game.id;
+						this.api.logger.debug('LeaguePlugin',
+							`Current game from cache "${this.region}-${this.name}: ${currentGame.mapName}`);
+						return currentGame;
+					}
+				}
+			}
+		}
+
+		const data: CurrentGameInfo = await this.api.request<CurrentGameInfo>(currentGameBySummonerId(this.region, this.id))
+			.catch((error: any) =>
+			{
+				if (error.status === 404) return null;
+				throw error;
+			});
+		if (!data) return null;
+
+		currentGame = new CurrentGame(this.api, data);
+		Summoner._currentGames.set(currentGame.id, currentGame);
+		this._currentGame = currentGame.id;
+		setTimeout(() => Summoner._currentGames.delete(currentGame.id), 3e5);
+
+		return currentGame;
+	}
+
+	/**
+	 * Gets the requested page of champion masteries
 	 * @param {number} page
 	 * @returns {object}
 	 */
@@ -148,17 +205,6 @@ export class Summoner
 			maxPages,
 			page,
 		};
-	}
-
-	/**
-	 * The url pointing to the icon of this summoner
-	 * @readonly
-	 */
-	public get profileIconURL(): string
-	{
-		return this.profileIconId
-			? profileIconURL(this.profileIconId)
-			: null;
 	}
 
 	/**

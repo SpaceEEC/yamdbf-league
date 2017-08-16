@@ -3,7 +3,8 @@ import { join } from 'path';
 import { inspect } from 'util';
 import { Client, IPlugin, Lang, Logger, Plugin, PluginConstructor } from 'yamdbf';
 
-import { LeagueCommand } from './commands/league';
+import { LeagueGameCommand } from './commands/LeagueGame';
+import { LeagueMasteryCommand } from './commands/LeagueMastery';
 import { RiotAPI } from './RiotAPI';
 import { LeaguePluginOptions, Region } from './types';
 
@@ -71,11 +72,20 @@ export class LeaguePlugin extends Plugin implements IPlugin
 	 */
 	public async init(): Promise<void>
 	{
-		await this.api.init();
+		await this.api.init()
+			.catch((err: any) =>
+			{
+				if (err.status === 403)
+				{
+					err.message += '; Are you sure your token is correct?';
+				}
+				throw err;
+			});
 
 		Lang.loadCommandLocalizationsFrom(join(__dirname, 'localization'));
 		Lang.loadLocalizationsFrom(join(__dirname, 'localization'));
 
-		this.client.commands.registerExternal(new LeagueCommand(this));
+		this.client.commands.registerExternal(new LeagueGameCommand(this));
+		this.client.commands.registerExternal(new LeagueMasteryCommand(this));
 	}
 }

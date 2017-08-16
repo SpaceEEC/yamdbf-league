@@ -3,10 +3,23 @@ import { get, Result } from 'snekfetch';
 import { Logger, logger } from 'yamdbf';
 
 import { Constants } from './Constants';
+import { Champion } from './structures/Champion';
+import { CurrentGame } from './structures/CurrentGame';
 import { Summoner } from './structures/Summoner';
-import { Champion, Champions, LeaguePluginOptions, Realms, Region, SummonerData } from './types';
+import { SummonerSpell } from './structures/SummonerSpell';
+import {
+	BundledData,
+	ChampionData,
+	LeaguePluginOptions,
+	Realms,
+	Region,
+	SummonerData,
+	// SummonerSpellData,
+} from './types';
 
-const { championDataSource, summonerByName, realmsSource } = Constants;
+const { version }: { version: string} = require('../package.json');
+
+const { championDataSource, summonerByName, realmsSource/*, summonerSpellDataSource*/ } = Constants;
 
 /**
  * RiotAPI class which handles caching and requests to the riot api
@@ -18,7 +31,13 @@ export class RiotAPI
 	 * keyed under their internal ids
 	 * @readonly
 	 */
-	public readonly champs: Collection<number, Champion> = new Collection<number, Champion>();
+	public readonly champions: Collection<number, Champion> = new Collection<number, Champion>();
+	/**
+	 * Collection of summoner spells
+	 * keyed under their ids
+	 * @readonly
+	 */
+	// public readonly summonerSpells: Collection<number, SummonerSpell> = new Collection<number, SummonerSpell>();
 	/**
 	 * Options passed with the league plugin
 	 */
@@ -36,13 +55,6 @@ export class RiotAPI
 	 * @readonly
 	 */
 	private readonly _token: string;
-	/**
-	 * Cache of already fetched summoners
-	 * keyed as "region-queryname"
-	 * @private
-	 * @readonly
-	 */
-	private readonly _cache: Collection<string, Summoner> = new Collection<string, Summoner>();
 
 	/**
 	 * Instantiates a new instance of the RiotAPI class
@@ -63,13 +75,24 @@ export class RiotAPI
 		Constants.realms = await this.request<Realms>(realmsSource(this.options.defaultRegion));
 		this.logger.debug('LeaguePlugin', 'Using realm version', Constants.realms.v);
 
-		const { data }: Champions = await this.request<Champions>(championDataSource());
-		for (const champion of Object.values<Champion>(data))
+		const { data: championData }: BundledData<ChampionData> =
+			await this.request<BundledData<ChampionData>>(championDataSource());
+		for (const champion of Object.values<ChampionData>(championData))
 		{
 			const id: number = Number(champion.key);
 			if (isNaN(id)) continue;
-			this.champs.set(id, champion);
+			this.champions.set(id, new Champion(champion));
 		}
+
+		// currently not being used
+		/*const { data: summonerSpellData }: BundledData<SummonerSpellData> = await
+			this.request<BundledData<SummonerSpellData>>(summonerSpellDataSource(this.options.defaultRegion));
+		for (const summonerSpell of Object.values(summonerSpellData))
+		{
+			const id: number = Number(summonerSpell.key);
+			if (isNaN(id)) continue;
+			this.summonerSpells.set(id, new SummonerSpell(summonerSpell));
+		}*/
 
 		this.logger.info('LeaguePlugin', 'Champions successfully cached.');
 	}
@@ -82,10 +105,10 @@ export class RiotAPI
 	public async getSummoner(region: Region, query: string): Promise<Summoner>
 	{
 		// I might run into duplicates if riot normalizes their queries differently or something
-		if (this._cache.has(`${region}-${query.toLowerCase()}`))
+		if (Summoner.cache.has(`${region}-${query.toLowerCase()}`))
 		{
-			this.logger.debug('LeaguePlugin', `From cache: "${region}-${query.toLowerCase()}"`);
-			return Promise.resolve(this._cache.get(`${region}-${query.toLowerCase()}`));
+			this.logger.debug('LeaguePlugin', `Summoner from cache: "${region}-${query.toLowerCase()}"`);
+			return Summoner.cache.get(`${region}-${query.toLowerCase()}`);
 		}
 
 		const data: SummonerData = await this.request<SummonerData>(summonerByName(region, query))
@@ -95,19 +118,18 @@ export class RiotAPI
 				throw error;
 			});
 		if (!data) return null;
-		const summoner: Summoner = new Summoner(this, region, data);
-		await summoner.init();
 
-		this._cache.set(`${region}-${query.toLowerCase()}`, summoner);
+		const summoner: Summoner = new Summoner(this, region, data);
+		Summoner.cache.set(`${region}-${query.toLowerCase()}`, summoner);
 		this.logger.debug(
 			'LeaguePlugin',
-			`Cached "${region}-${query.toLowerCase()}"; New cache count is: ${this._cache.size.toString()}`,
+			`Cached summoner "${region}-${query.toLowerCase()}"; New cache count is: ${Summoner.cache.size.toString()}`,
 		);
 
-		if (this._cache.size > this.options.maxCacheSize)
+		if (Summoner.cache.size > this.options.maxCacheSize)
 		{
-			this._cache.delete(this._cache.firstKey());
-			this.logger.debug('LeaguePlugin', 'Removed oldest entry from cache.');
+			Summoner.cache.delete(Summoner.cache.firstKey());
+			this.logger.debug('LeaguePlugin', 'Removed oldest entry from cache summoner.');
 		}
 
 		return summoner;
@@ -124,6 +146,7 @@ export class RiotAPI
 		this.logger.debug('LeagePlugin', 'Requesting', url);
 		return get(url)
 			.set('X-Riot-Token', this._token)
+			.set('User-Agent', `YAMDBF-League v${version} (https://github.com/SpaceEEC/yamdbf-league)`)
 			.then<any>((res: Result) => res.body);
 	}
 }

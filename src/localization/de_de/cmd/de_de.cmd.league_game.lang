@@ -1,0 +1,21 @@
+[PLUGIN_LEAGUE_SUMMONER_NOT_INGAME]
+Der angefragte Beschwörer befindet sich momentan nicht in einem Spiel.
+
+[PLUGIN_LEAGUE_NO_CHAMPIONS_BANNED]
+## gramatically correct would be "Banne", but nobody uses that...
+❌ Keine Bans
+
+[PLUGIN_LEAGUE_PICKS_BLUE]
+Blaues Team
+
+[PLUGIN_LEAGUE_BANS_BLUE]
+❌ Bans
+
+[PLUGIN_LEAGUE_PICKS_RED]
+Rotes Team
+
+[PLUGIN_LEAGUE_BANS_RED]
+❌ Bans
+
+[PLUGIN_LEAGUE_EMBED_GENERATED_AT]
+Generiert um:

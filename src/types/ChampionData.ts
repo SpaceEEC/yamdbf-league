@@ -1,24 +1,13 @@
+import { DataMixing } from './';
+
 /**
  * Champion returned as part of Champions data from the Riot API
  */
-export type Champion = {
+export type ChampionData = {
 	/**
 	 * Game version, this champion data is for
 	 */
 	version: string,
-	/**
-	 * Internal Name
-	 */
-	id: string,
-	/**
-	 * Actual ID
-	 */
-	key: string,
-	/**
-	 * External name
-	 * The name used in the client etc
-	 */
-	name: string,
 	/**
 	 * Title text of this champion
 	 */
@@ -32,29 +21,8 @@ export type Champion = {
 		attack: number,
 		defense: number,
 		magic: number,
-		difficutly: number,
+		difficulty: number,
 	}
-	/**
-	 * Image data
-	 */
-	image: {
-		/**
-		 * Full image file name
-		 */
-		full: string,
-		/**
-		 * The group this kind of data belongs to
-		 */
-		group: 'champion',
-		/**
-		 * Full sprite file name
-		 */
-		sprite: string,
-		h: number,
-		w: number,
-		y: number,
-		x: number,
-	},
 	/**
 	 * Array of tags
 	 * ex. "Figther", "Tank", etc
@@ -89,4 +57,4 @@ export type Champion = {
 		attackspeedoffset: number,
 		attackspeedperlevel: number,
 	},
-};
+} & DataMixing<string>;

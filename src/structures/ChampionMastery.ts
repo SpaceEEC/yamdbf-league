@@ -1,6 +1,7 @@
 import { Constants } from '../Constants';
 import { RiotAPI } from '../RiotAPI';
 import { MasteryData } from '../types';
+import { Champion } from './Champion';
 import { Summoner } from './Summoner';
 
 /**
@@ -9,10 +10,10 @@ import { Summoner } from './Summoner';
 export class ChampionMastery
 {
 	/**
-	 * Champion id
+	 * Actual champion
 	 * @readonly
 	 */
-	public readonly id: number;
+	public readonly champion: Champion;
 	/**
 	 * Champion level
 	 * @readonly
@@ -48,12 +49,12 @@ export class ChampionMastery
 	 * @readonly
 	 */
 	public readonly tokensEarned: number;
-
 	/**
 	 * Reference to the summoner this mastery belongs to
 	 * @readonly
 	 */
 	public readonly summoner: Summoner;
+
 	/**
 	 * Reference to the RiotAPI class' instance
 	 * @private
@@ -80,7 +81,7 @@ export class ChampionMastery
 		this._api = api;
 		this.summoner = summoner;
 
-		this.id = championId;
+		this.champion = api.champions.get(championId);
 		this.level = championLevel;
 		this.points = championPoints;
 		this.pointsSinceLestLevel = championPointsSinceLastLevel;
@@ -96,7 +97,7 @@ export class ChampionMastery
 	 */
 	public get name(): string
 	{
-		return this._api.champs.get(this.id).name;
+		return this.champion.name;
 	}
 	/**
 	 * Title of the champion
@@ -104,7 +105,7 @@ export class ChampionMastery
 	 */
 	public get title(): string
 	{
-		return this._api.champs.get(this.id).title;
+		return this.champion.title;
 	}
 
 	/**
@@ -122,7 +123,7 @@ export class ChampionMastery
 	 */
 	public get iconURL(): string
 	{
-		return Constants.championIconURL(this._api.champs.get(this.id).image.full);
+		return this.champion.IconURL;
 	}
 
 	/**

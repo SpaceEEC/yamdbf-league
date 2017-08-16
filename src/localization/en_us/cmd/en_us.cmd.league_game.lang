@@ -1,0 +1,20 @@
+[PLUGIN_LEAGUE_SUMMONER_NOT_INGAME]
+The requested summoner is currently not in a game.
+
+[PLUGIN_LEAGUE_NO_CHAMPIONS_BANNED]
+❌ No Bans
+
+[PLUGIN_LEAGUE_PICKS_BLUE]
+Blue Team
+
+[PLUGIN_LEAGUE_BANS_BLUE]
+❌ Bans
+
+[PLUGIN_LEAGUE_PICKS_RED]
+Red Team
+
+[PLUGIN_LEAGUE_BANS_RED]
+❌ Bans
+
+[PLUGIN_LEAGUE_EMBED_GENERATED_AT]
+Generated at:
