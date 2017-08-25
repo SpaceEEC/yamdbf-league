@@ -42,7 +42,6 @@ export class RiotAPI
 	 * Options passed with the league plugin
 	 */
 	public readonly options: LeaguePluginOptions;
-
 	/**
 	 * Reference to the logger singleton
 	 * @readonly

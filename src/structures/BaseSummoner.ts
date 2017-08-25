@@ -13,11 +13,10 @@ export abstract class BaseSummoner
 {
 	/**
 	 * Profile icon id of this summoner
-	 * (See also get profileIconURL)
+	 * (See also the iconURL getter)
 	 * @readonly
 	 */
 	public readonly iconId: number;
-
 	/**
 	 * Name of this summoner
 	 * @readonly

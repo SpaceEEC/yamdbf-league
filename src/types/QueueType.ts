@@ -1,3 +1,4 @@
+// fun
 export enum QueueType
 {
 	CUSTOM_GAME = 0,

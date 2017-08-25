@@ -18,7 +18,6 @@ export class Champion
 	 * @readonly
 	 */
 	public readonly id: number;
-
 	/**
 	 * Image data
 	 * @readonly
@@ -41,7 +40,6 @@ export class Champion
 		y: number,
 		x: number,
 	};
-
 	/**
 	 * Generic info about this champion
 	 * @readonly
@@ -52,13 +50,11 @@ export class Champion
 		magic: number,
 		difficulty: number,
 	};
-
 	/**
 	 * Internally used name for this champion
 	 * @readonly
 	 */
 	public readonly internalName: string;
-
 	/**
 	 * The name of this champion
 	 * @readonly
