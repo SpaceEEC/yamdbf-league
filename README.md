@@ -6,7 +6,7 @@ A YAMDBF league plugin which allows users to easily retrieve their and others ch
 ```
 npm i -S SpaceEEC/yamdbf-league
 ```
-> Note: YAMDBF 3.0.0 is required to use this plugin since plugin support was be added with that version.
+> Note: YAMDBF 3.0.0 is required to use this plugin since plugin support has been added with 3.0.0.
 
 - Add it to your client's plugins, here a small example:
 ```ts
