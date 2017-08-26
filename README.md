@@ -6,7 +6,7 @@ A YAMDBF league plugin which allows users to easily retrieve their and others ch
 ```
 npm i -S SpaceEEC/yamdbf-league
 ```
-> Note: YAMDBF 3.0.0 is required to use this plugin since plugin support was/will be added with that version.
+> Note: YAMDBF 3.0.0 is required to use this plugin since plugin support was be added with that version.
 
 - Add it to your client's plugins, here a small example:
 ```ts
@@ -19,16 +19,39 @@ const client: Client = new Client({
 ```
 > Note: This plugin's build method is being exported as `League`, and `default`.
 
-# Command
-Currently just one command, maybe I'll add more later on.
+# Commands
+
+## Champion Mastery
+> The default region is, if not specified otherwise, `euw`.
 
 `<prefix>league [Region] <Summoner> [Page | Champion]`
-> Aliased with `lol`
+> Aliased with `lol`, `leagueChamps` and `lolChamps`.
 
-For example: `<prefix>league euw test 2`
+### Pages
+For Example: `<prefix>league euw test 2` will display the second page (champions 11-20) of the summoner `test` in the `euw` region with the following information (per champion):
+- Champion Level
+- Champion Mastery Score
 
-Will display the second page (champions 11-20) of the summoner `test` in the `euw` region.
+### Indiviual Champions
+For example `<prefix> league euw test lux`
+will display stats about `Lux` from `test` in the `euw` region, showing the fllowing information:
+- Champion Mastery Level
+- Points / Tokens required until next level (if applicable)
+- Whether a chest has been granted
 
+## Live game
+
+`<prefix>lolGame [Region] <Summoner>`
+> Aliased with `leagueGame`, `lolLive` and `leagueLive`.
+
+For example: `<prefix> league euw test`
+
+Will display the following current game's information (if ingame) of the summoner `test` in the `euw` region:
+- Played Map
+- Queue Type
+- Current Time
+- Picked Champions
+- Banned Champions (if applicable)
 # Configuring
 > Note: You can use the exported type `LeaguePluginOptions`.
 
