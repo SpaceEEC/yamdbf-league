@@ -24,10 +24,10 @@ const {
 } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
-@aliases('leagueGame', 'lolGame', 'lol-game', 'lollive', 'lol-live', 'leagueLive', 'league-live')
+@aliases('leagueGame', 'lolLive', 'leagueLive')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays the current game of a summoner')
-@name('league-game')
+@name('lolGame')
 @group('league')
 @guildOnly
 @usage('<prefix>league-game [Region] <Summoner>')

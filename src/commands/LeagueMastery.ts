@@ -21,11 +21,7 @@ const {
 } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
-@aliases(
-	'leagueChamps',
-	'league-champs',
-	'lolChamps',
-	'lol-champs')
+@aliases('leagueChamps', 'lolChamps')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays generic information about the specified summoner\'s champs.')
 @name('lol')
