@@ -17,7 +17,7 @@ import {
 	// SummonerSpellData,
 } from './types';
 
-const { version }: { version: string} = require('../package.json');
+const { version }: { version: string } = require('../package.json');
 
 const { championDataSource, summonerByName, realmsSource/*, summonerSpellDataSource*/ } = Constants;
 
@@ -40,14 +40,29 @@ export class RiotAPI
 	// public readonly summonerSpells: Collection<number, SummonerSpell> = new Collection<number, SummonerSpell>();
 	/**
 	 * Options passed with the league plugin
+	 * @readonly
 	 */
 	public readonly options: LeaguePluginOptions;
 	/**
-	 * Reference to the logger singleton
+	 * Collection of all cached ongoing games
 	 * @readonly
 	 */
-	@logger public readonly logger: Logger;
+	// internal would be better here :c
+	public readonly currentGames: Collection<number, CurrentGame> = new Collection<number, CurrentGame>();
 
+	/**
+	 * Reference to the logger singleton
+	 * @private
+	 * @readonly
+	 */
+	@logger private readonly logger: Logger;
+	/**
+	 * Cache of already fetched summoners
+	 * keyed as "region-queryname"
+	 * @private
+	 * @readonly
+	 */
+	private readonly _summonerCache: Collection<string, Summoner> = new Collection<string, Summoner>();
 	/**
 	 * Riot API token
 	 * @private
@@ -105,10 +120,10 @@ export class RiotAPI
 	public async fetchSummoner(region: Region, query: string): Promise<Summoner>
 	{
 		// I might run into duplicates if riot normalizes their queries differently or something
-		if (Summoner.cache.has(`${region}-${query.toLowerCase()}`))
+		if (this._summonerCache.has(`${region}-${query.toLowerCase()}`))
 		{
 			this.logger.debug('LeaguePlugin', `Summoner from cache: "${region}-${query.toLowerCase()}"`);
-			return Summoner.cache.get(`${region}-${query.toLowerCase()}`);
+			return this._summonerCache.get(`${region}-${query.toLowerCase()}`);
 		}
 
 		const data: SummonerData = await this.request<SummonerData>(summonerByName(region, query))
@@ -120,15 +135,15 @@ export class RiotAPI
 		if (!data) return null;
 
 		const summoner: Summoner = new Summoner(this, region, data);
-		Summoner.cache.set(`${region}-${query.toLowerCase()}`, summoner);
+		this._summonerCache.set(`${region}-${query.toLowerCase()}`, summoner);
 		this.logger.debug(
 			'LeaguePlugin',
-			`Cached summoner "${region}-${query.toLowerCase()}"; New cache count is: ${Summoner.cache.size.toString()}`,
+			`Cached summoner "${region}-${query.toLowerCase()}"; New cache count is: ${this._summonerCache.size.toString()}`,
 		);
 
-		if (Summoner.cache.size > this.options.maxCacheSize)
+		if (this._summonerCache.size > this.options.maxCacheSize)
 		{
-			Summoner.cache.delete(Summoner.cache.firstKey());
+			this._summonerCache.delete(this._summonerCache.firstKey());
 			this.logger.debug('LeaguePlugin', 'Removed oldest entry from cache summoner.');
 		}
 

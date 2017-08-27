@@ -1,4 +1,5 @@
 import { Collection } from 'discord.js';
+import { Logger, logger } from 'yamdbf';
 
 import { Constants } from '../Constants';
 import { RiotAPI } from '../RiotAPI';
@@ -15,21 +16,6 @@ const { masteryByChampionId, allMasteriesBySummonerId, totalMasteryLevelById, cu
  */
 export class Summoner extends BaseSummoner
 {
-	/**
-	 * Cache of already fetched summoners
-	 * keyed as "region-queryname"
-	 * @static
-	 * @readonly
-	 */
-	public static readonly cache: Collection<string, Summoner> = new Collection<string, Summoner>();
-	/**
-	 * Set of all cached ongoing games
-	 * @private
-	 * @static
-	 * @readonly
-	 */
-	private static readonly _currentGames: Collection<number, CurrentGame> = new Collection<number, CurrentGame>();
-
 	/**
 	 * Account id of this summoner
 	 * @readonly
@@ -64,6 +50,12 @@ export class Summoner extends BaseSummoner
 	 */
 	public isdMasteryDataFetched: boolean = false;
 
+	/**
+	 * Reference to the logger singleton instance
+	 * @private
+	 * @readonly
+	 */
+	@logger private readonly logger: Logger;
 	/**
 	 * ID of the current game this Summoner participates in
 	 * @readonly
@@ -116,7 +108,7 @@ export class Summoner extends BaseSummoner
 		let mastery: ChampionMastery = this.masteries.find((_mastery: ChampionMastery) => _mastery.champion.id === id);
 		if (mastery)
 		{
-			this.api.logger.debug('LeaguePlugin', `Champion mastery from cache: "${this.region}-${this.name}: ${mastery.name}"`);
+			this.logger.debug('LeaguePlugin', `Champion mastery from cache: "${this.region}-${this.name}: ${mastery.name}"`);
 			return mastery;
 		}
 
@@ -133,7 +125,7 @@ export class Summoner extends BaseSummoner
 		this.masteries.push(mastery);
 		this.masteries.sort((a: ChampionMastery, b: ChampionMastery) => a.points - b.points);
 
-		this.api.logger.debug('LeaguePlugin', `Cached champion mastery: "${this.region}-${this.name}: ${mastery.name}"`);
+		this.logger.debug('LeaguePlugin', `Cached champion mastery: "${this.region}-${this.name}: ${mastery.name}"`);
 		return mastery;
 	}
 
@@ -147,10 +139,10 @@ export class Summoner extends BaseSummoner
 		let currentGame: CurrentGame;
 		if (this._currentGame)
 		{
-			currentGame = Summoner._currentGames.get(this._currentGame);
+			currentGame = this.api.currentGames.get(this._currentGame);
 			if (currentGame)
 			{
-				this.api.logger.debug('LeaguePlugin',
+				this.logger.debug('LeaguePlugin',
 					`Current game from cache "${this.region}-${this.name}: ${currentGame.mapName}`);
 				return currentGame;
 			}
@@ -158,14 +150,14 @@ export class Summoner extends BaseSummoner
 		}
 		else
 		{
-			for (const game of Summoner._currentGames.values())
+			for (const game of this.api.currentGames.values())
 			{
 				for (const participant of game.participants)
 				{
 					if (participant.id === this.id)
 					{
 						this._currentGame = game.id;
-						this.api.logger.debug('LeaguePlugin',
+						this.logger.debug('LeaguePlugin',
 							`Current game from cache "${this.region}-${this.name}: ${currentGame.mapName}`);
 						return currentGame;
 					}
@@ -182,9 +174,10 @@ export class Summoner extends BaseSummoner
 		if (!data) return null;
 
 		currentGame = new CurrentGame(this.api, data);
-		Summoner._currentGames.set(currentGame.id, currentGame);
+		this.api.currentGames.set(currentGame.id, currentGame);
 		this._currentGame = currentGame.id;
-		setTimeout(() => Summoner._currentGames.delete(currentGame.id), 3e5);
+		// Delete from cache after 5 minutes
+		setTimeout(() => this.api.currentGames.delete(currentGame.id), 3e5);
 
 		return currentGame;
 	}
