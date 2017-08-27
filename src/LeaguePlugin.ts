@@ -45,11 +45,13 @@ export class LeaguePlugin extends Plugin implements IPlugin
 	 * @readonly
 	 */
 	public readonly api: RiotAPI;
+
 	/**
 	 * Reference to the client
+	 * @private
 	 * @readonly
 	 */
-	public readonly client: Client;
+	private readonly client: Client;
 
 	/**
 	 * Instantiates this plugin
