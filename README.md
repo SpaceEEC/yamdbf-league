@@ -64,10 +64,10 @@ import { League, LeaguePluginOptions, Region } from 'yamdbf-league';
 const options: LeaguePluginOptions = {
 	defaultRegion: Region.NA,
 	emojis: {
-		level4: '<:level4:335427521078231051> ',
-		level5: '<:level5:335427521900445696> ',
-		level6: '<:level6:335427522332459008> ',
-		level7: '<:level7:335427524429348866> ',
+		level4: '<:level4:335427521078231051>',
+		level5: '<:level5:335427521900445696>',
+		level6: '<:level6:335427522332459008>',
+		level7: '<:level7:335427524429348866>',
 	},
 	maxCacheSize: 50,
 };
