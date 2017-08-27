@@ -96,6 +96,8 @@ export class Summoner extends BaseSummoner
 		{
 			this.masteries.push(new ChampionMastery(this.api, this, mastery));
 		}
+
+		this.isMasteryDataFetched = true;
 	}
 
 	/**

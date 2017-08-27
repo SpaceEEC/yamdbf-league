@@ -149,6 +149,7 @@ export class LeagueMasteryCommand extends Command
 			return message.channel.send(res(S.PLUGIN_LEAGUE_NO_SUMMONER_FOUND))
 				.then(() => undefined);
 		}
+		if (!summoner.isMasteryDataFetched) await summoner.fetchAllChampionMasteryData();
 
 		if (typeof input !== 'number') return this.champion(res, message, input, summoner);
 		return this.page(res, message, input, summoner);
@@ -212,8 +213,6 @@ export class LeagueMasteryCommand extends Command
 
 	private async page(res: ResourceLoader, message: Message, requestedPage: number, summoner: Summoner): Promise<void>
 	{
-		if (!summoner.isMasteryDataFetched) await summoner.fetchAllChampionMasteryData;
-
 		const { masteries, maxPages, page }: { masteries: ChampionMastery[], maxPages: number, page: number } =
 			summoner.page(requestedPage);
 
