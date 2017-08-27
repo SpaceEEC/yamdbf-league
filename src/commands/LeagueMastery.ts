@@ -21,10 +21,10 @@ const {
 } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
-@aliases('leagueChamps', 'lolChamps')
+@aliases('lol', 'leagueChamps', 'lolChamps')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays generic information about the specified summoner\'s champs.')
-@name('lol')
+@name('league')
 @group('league')
 @guildOnly
 @usage('<prefix>league [Region] <Summoner> [Page | Champion]')
