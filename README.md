@@ -98,7 +98,7 @@ You can find the enum and it's string representations [here](src/types/Region.ts
 You should be able to use all valid hosts, that can be found [here](https://developer.riotgames.com/regional-endpoints.html). (Might require a login)
 
 ## maxCacheSize
-This options defaults to `100`.
+This option defaults to `100`.
 
 The maximum amount of summoners to cache across all regions to not unnecessarily query the api multiple times for just one summoner.
 
