@@ -20,10 +20,9 @@ const client: Client = new Client({
 > Note: This plugin's build method is being exported as `League`, and `default`.
 
 # Commands
-
-## Champion Mastery
 > The default region is, if not specified otherwise, `euw`.
 
+## Champion Mastery
 `<prefix>league [Region] <Summoner> [Page | Champion]`
 > Aliased with `lol`, `leagueChamps` and `lolChamps`.
 
