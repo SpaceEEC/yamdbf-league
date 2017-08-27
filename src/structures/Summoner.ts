@@ -48,7 +48,7 @@ export class Summoner extends BaseSummoner
 	/**
 	 * Whether champion mastery data has already been fetched for this summoner
 	 */
-	public isdMasteryDataFetched: boolean = false;
+	public isMasteryDataFetched: boolean = false;
 
 	/**
 	 * Reference to the logger singleton instance

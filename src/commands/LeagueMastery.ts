@@ -212,7 +212,7 @@ export class LeagueMasteryCommand extends Command
 
 	private async page(res: ResourceLoader, message: Message, requestedPage: number, summoner: Summoner): Promise<void>
 	{
-		if (!summoner.isdMasteryDataFetched) await summoner.fetchAllChampionMasteryData;
+		if (!summoner.isMasteryDataFetched) await summoner.fetchAllChampionMasteryData;
 
 		const { masteries, maxPages, page }: { masteries: ChampionMastery[], maxPages: number, page: number } =
 			summoner.page(requestedPage);
