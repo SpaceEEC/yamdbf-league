@@ -143,7 +143,7 @@ export class LeagueMasteryCommand extends Command
 		: [ResourceLoader, Region, string, number | Champion])
 		: Promise<void>
 	{
-		const summoner: Summoner = await this.plugin.api.getSummoner(region, query);
+		const summoner: Summoner = await this.plugin.api.fetchSummoner(region, query);
 		if (!summoner)
 		{
 			return message.channel.send(res(S.PLUGIN_LEAGUE_NO_SUMMONER_FOUND))
@@ -156,7 +156,7 @@ export class LeagueMasteryCommand extends Command
 
 	private async champion(res: ResourceLoader, message: Message, champion: Champion, summoner: Summoner): Promise<void>
 	{
-		const mastery: ChampionMastery = await summoner.getChampionMastery(champion.id);
+		const mastery: ChampionMastery = await summoner.fetchChampionMastery(champion.id);
 		if (!mastery)
 		{
 			return message.channel.send(res(S.PLUGIN_LEAGUE_NO_MASTERY_FOUND)).then(() => undefined);

@@ -74,13 +74,13 @@ export class LeagueGameCommand extends Command
 			}
 		}
 
-		const summoner: Summoner = await this.plugin.api.getSummoner(region as Region, second || first);
+		const summoner: Summoner = await this.plugin.api.fetchSummoner(region as Region, second || first);
 		if (!summoner)
 		{
 			throw new Error(res(S.PLUGIN_LEAGUE_NO_SUMMONER_FOUND));
 		}
 
-		const currentGame: CurrentGame = await summoner.getCurrentGame();
+		const currentGame: CurrentGame = await summoner.fetchCurrentGame();
 		if (!currentGame)
 		{
 			throw res(S.PLUGIN_LEAGUE_SUMMONER_NOT_INGAME);

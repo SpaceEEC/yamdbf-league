@@ -111,7 +111,7 @@ export class Summoner extends BaseSummoner
 	 * @param {number} id champion id
 	 * @returns {Promise<?ChampionMastery>}
 	 */
-	public async getChampionMastery(id: number): Promise<ChampionMastery>
+	public async fetchChampionMastery(id: number): Promise<ChampionMastery>
 	{
 		let mastery: ChampionMastery = this.masteries.find((_mastery: ChampionMastery) => _mastery.champion.id === id);
 		if (mastery)
@@ -142,7 +142,7 @@ export class Summoner extends BaseSummoner
 	 * Is null when the summoner is not currently in a game.
 	 * @returns {Promise<?CurrentGame>}
 	 */
-	public async getCurrentGame(): Promise<CurrentGame>
+	public async fetchCurrentGame(): Promise<CurrentGame>
 	{
 		let currentGame: CurrentGame;
 		if (this._currentGame)

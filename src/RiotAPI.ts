@@ -98,10 +98,11 @@ export class RiotAPI
 
 	/**
 	 * Fetches a summoner by name.
+	 * @param {Region} region
 	 * @param {string} name
 	 * @returns {Promise<?Summoner>}
 	 */
-	public async getSummoner(region: Region, query: string): Promise<Summoner>
+	public async fetchSummoner(region: Region, query: string): Promise<Summoner>
 	{
 		// I might run into duplicates if riot normalizes their queries differently or something
 		if (Summoner.cache.has(`${region}-${query.toLowerCase()}`))
